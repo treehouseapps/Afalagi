@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  phone     String?
+  role      Role     @default(USER)
+
+  pharmacy  Pharmacy?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Pharmacy {
+  id          Int      @id @default(autoincrement())
+
+  ownerId     Int      @unique
+  owner       User     @relation(fields: [ownerId], references: [id])
+
+  name        String
+  address     String
+  city        String
+  phone       String?
+
+  latitude    Float?
+  longitude   Float?
+
+  approved    Boolean  @default(false)
+
+  inventory   Inventory[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Medicine {
+  id          Int      @id @default(autoincrement())
+
+  name        String
+  genericName String?
+  description String?
+  category    String
+  manufacturer String?
+  price       Float?
+  inventory Inventory[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Inventory {
+  id          Int      @id @default(autoincrement())
+
+  pharmacyId  Int
+  medicineId  Int
+
+  pharmacy    Pharmacy @relation(fields: [pharmacyId], references: [id])
+  medicine    Medicine @relation(fields: [medicineId], references: [id])
+
+  quantity    Int      @default(0)
+  price       Float?
+  expiryDate  DateTime?
+
+  createdAt DateTime @default(now())
+}
+
+
+enum Role {
+  USER
+  PHARMACY_OWNER
+  ADMIN
+}
