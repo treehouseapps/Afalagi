@@ -7,7 +7,7 @@ export default function AdminPharmacyVerificationPage() {
       name: "MediTrust Pharmacy",
       city: "Addis Ababa",
       location: "Addis Ababa",
-      status: "Pending",
+      status: "Approved",
       documents: ["Digital ID", "Pharmacy License", "Trade License"],
     },
     {
@@ -15,10 +15,13 @@ export default function AdminPharmacyVerificationPage() {
       name: "LifeCare Pharmacy",
       city: "Hawassa",
       location: "Hawassa",
-      status: "Pending",
+      status: "Approved",
       documents: ["Digital ID", "Pharmacy License", "Trade License"],
     },
   ];
+  const VerifiedPharmacy = Pharmacy.filter(
+    (pharmacy) => pharmacy.status === "Approved",
+  );
   return (
     <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
       <h1>Pharmacy Verification</h1>
@@ -237,7 +240,7 @@ export default function AdminPharmacyVerificationPage() {
               </thead>
 
               <tbody>
-                {Pharmacy.map((item, index) => (
+                {VerifiedPharmacy.map((item, index) => (
                   <tr
                     key={item.name}
                     style={{
