@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Pharmacy as PharmacyType } from "@/types/pharmacy";
 
 export default function AdminPharmaciesPage() {
-  const [editOpen, setEditOpen] = useState(false);
+  const [viewOpen, setViewOpen] = useState(false);
 
   type Pharmacy = PharmacyType;
   const [selectedPharmacy, setSelectedPharmacy] = useState<Pharmacy | null>(
@@ -193,7 +193,7 @@ export default function AdminPharmaciesPage() {
                         type="button"
                         onClick={() => {
                           setSelectedPharmacy(item);
-                          setEditOpen(true);
+                          setViewOpen(true);
                         }}
                         style={{ marginRight: "0.5rem" }}
                       >
@@ -209,8 +209,8 @@ export default function AdminPharmaciesPage() {
         </div>
       </section>
       <ViewModal
-        open={editOpen}
-        onClose={() => setEditOpen(false)}
+        open={viewOpen}
+        onClose={() => setViewOpen(false)}
         pharmacy={selectedPharmacy}
       />
     </main>

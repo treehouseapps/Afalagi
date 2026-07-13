@@ -1,121 +1,166 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
-import { useEffect, useState } from "react";
 import {
-  Activity,
-  Menu,
-  X,
+  ArrowLeft,
   MapPin,
-  Phone,
-  Star,
-  Check,
+  Search,
+  AlertCircle,
   Pill,
-  DollarSign,
+  Navigation2,
+  Map as MapIcon,
+  Activity,
+  CheckCircle2,
+  Info,
 } from "lucide-react";
+import Footer from "@/components/layout/Footer";
+import Navbar from "@/components/layout/Navbar";
+
+const medicineData = {
+  name: "Paracetamol 500mg",
+  category: "Pain Relief & Fever",
+  description:
+    "Paracetamol is a common painkiller used to treat aches and pain. It can also be used to reduce a high temperature.",
+  dosage:
+    "Adults can take 1 or 2 tablets (500mg) every 4 to 6 hours. Do not take more than 8 tablets in 24 hours.",
+  sideEffects:
+    "Side effects are rare but can include allergic reactions (rash, swelling).",
+};
+
+const availablePharmacies = [
+  {
+    id: 1,
+    name: "Health Plus Pharmacy",
+    address: "Bole Road, Near Edna Mall, Addis Ababa",
+    distance: "0.5 km",
+    status: "In Stock",
+    inStock: true,
+  },
+  {
+    id: 2,
+    name: "City Care Pharmacy",
+    address: "Piassa, Churchill Ave, Addis Ababa",
+    distance: "1.2 km",
+    status: "In Stock",
+    inStock: true,
+  },
+  {
+    id: 3,
+    name: "Sunrise Meds",
+    address: "22 Mazoriya, Addis Ababa",
+    distance: "2.8 km",
+    status: "Low Stock",
+    inStock: false,
+  },
+];
 
 export default function MedicineDetailPage() {
-  const medicine = {
-    id: 1,
-    name: "Paracetamol 500mg",
-    category: "Pain Relief",
-    price: "$2.50",
-    description:
-      "Paracetamol is used to treat mild to moderate pain and fever. It works by reducing the activity of the body's pain receptors.",
-    dosage: "500 mg per tablet",
-    usage: "Take 1-2 tablets every 4-6 hours, not to exceed 8 tablets per day",
-    sideEffects: ["Rare allergic reactions", "Liver damage (at high doses)"],
-    pharmacies: [
-      {
-        id: 1,
-        name: "Health Plus Pharmacy",
-        distance: "0.5 km",
-        inStock: true,
-      },
-      { id: 2, name: "City Care Pharma", distance: "1.2 km", inStock: true },
-      { id: 3, name: "Wellness Pharmacy", distance: "2.1 km", inStock: true },
-    ],
-  };
-
   return (
-    <div className="detail-page">
+    <div className="list-page">
       <Navbar />
-      <main className="detail-main">
-        <div className="detail-header">
-          <Link href="/medicines" className="back-link">
-            ← Back to Medicines
+      <main className="list-main">
+        <div className="list-search-panel">
+          <Link href="/medicines">
+            {" "}
+            <button onClick={() => {}} className="nav-button ghost">
+              <ArrowLeft size={18} />
+              Back to Search Results
+            </button>
           </Link>
-          <div className="detail-title">
-            <h1>{medicine.name}</h1>
-            <p className="detail-category">{medicine.category}</p>
+        </div>
+
+        <div className="list-header">
+          <p>{medicineData.category}</p>
+          <h1>{medicineData.name}</h1>
+
+          <div className="search-box">
+            <Search size={20} />
+            <span>
+              Available in {availablePharmacies.length} Pharmacies Nearby
+            </span>
           </div>
         </div>
 
-        <div className="detail-container">
-          <div className="detail-content">
-            <section className="detail-section">
-              <h2>About this Medicine</h2>
-              <p>{medicine.description}</p>
-            </section>
-
-            <section className="detail-section">
-              <h2>Dosage Information</h2>
-              <div className="info-box">
-                <div className="info-item">
-                  <span className="info-label">Strength:</span>
-                  <span className="info-value">{medicine.dosage}</span>
-                </div>
-                <div className="info-item">
-                  <span className="info-label">Usage:</span>
-                  <span className="info-value">{medicine.usage}</span>
-                </div>
-              </div>
-            </section>
-
-            <section className="detail-section">
-              <h2>Side Effects</h2>
-              <ul className="side-effects-list">
-                {medicine.sideEffects.map((effect, idx) => (
-                  <li key={idx}>{effect}</li>
-                ))}
-              </ul>
-            </section>
+        <div className="list-container single-col">
+          <div className="filter-header">
+            <div className="brand-icon">
+              <MapPin size={24} />
+            </div>
+            <h2>Where You Can Buy It</h2>
           </div>
 
-          <div className="detail-sidebar">
-            <div className="price-card">
-              <div className="price-display">
-                <DollarSign size={20} />
-                <span className="price-value">{medicine.price}</span>
+          <div className="items-list">
+            {availablePharmacies.map((pharmacy) => (
+              <div key={pharmacy.id} className="pharmacy-card">
+                <div className="pharmacy-header">
+                  <div>
+                    <h3>{pharmacy.name}</h3>
+                    <p className="info-row">
+                      <MapPin size={14} /> {pharmacy.address}
+                      <strong className="distance">{pharmacy.distance}</strong>
+                    </p>
+                  </div>
+
+                  <div
+                    className={`stock-badge ${pharmacy.inStock ? "in-stock" : "limited"}`}
+                  >
+                    {pharmacy.inStock ? (
+                      <CheckCircle2 size={16} />
+                    ) : (
+                      <AlertCircle size={16} />
+                    )}
+                    {pharmacy.status}
+                  </div>
+                </div>
+
+                <div className="item-footer">
+                  <Link key={pharmacy.id} href={`/pharmacies/${pharmacy.id}`}>
+                    <button className="nav-button ghost">View</button>
+                  </Link>
+                  <button className="nav-button primary">
+                    <Navigation2 size={16} /> Dir
+                  </button>
+                </div>
               </div>
-              <p className="price-note">Average price</p>
+            ))}
+
+            <div className="item-card">
+              <div className="info-row">
+                <MapIcon size={32} />
+                <span>View on Map (Coming Soon)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="list-container single-col">
+          <div className="filter-header">
+            <Info size={20} />
+            <h3>About this Medicine</h3>
+          </div>
+
+          <div className="items-grid">
+            <div className="item-card">
+              <div className="filter-header">
+                <Pill size={20} /> Description
+              </div>
+              <p>{medicineData.description}</p>
             </div>
 
-            <section className="available-pharmacies">
-              <h3>Available At</h3>
-              <div className="pharmacies-list">
-                {medicine.pharmacies.map((ph) => (
-                  <Link
-                    key={ph.id}
-                    href={`/pharmacies/${ph.id}`}
-                    className="pharmacy-item"
-                  >
-                    <div className="pharmacy-item-header">
-                      <span className="pharmacy-name">{ph.name}</span>
-                      {ph.inStock && (
-                        <span className="in-stock-badge">In Stock</span>
-                      )}
-                    </div>
-                    <div className="pharmacy-distance">
-                      <MapPin size={14} />
-                      {ph.distance}
-                    </div>
-                  </Link>
-                ))}
+            <div className="item-card">
+              <div className="filter-header">
+                <Activity size={20} /> Dosage
               </div>
-            </section>
+              <p>{medicineData.dosage}</p>
+            </div>
+
+            <div className="item-card">
+              <div className="filter-header">
+                <AlertCircle size={20} /> Side Effects
+              </div>
+              <p>{medicineData.sideEffects}</p>
+            </div>
           </div>
         </div>
       </main>
