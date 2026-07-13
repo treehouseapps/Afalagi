@@ -5,67 +5,73 @@ import { useEffect, useState } from "react";
 import { Search, MapPin, Star, Filter } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-
-const medicines = [
-  {
-    id: 1,
-    name: "Paracetamol 500mg",
-    price: "$2.50",
-    category: "Pain Relief",
-    stock: "In Stock",
-  },
-  {
-    id: 2,
-    name: "Amoxicillin 250mg",
-    price: "$4.80",
-    category: "Antibiotics",
-    stock: "In Stock",
-  },
-  {
-    id: 3,
-    name: "Ibuprofen 400mg",
-    price: "$3.20",
-    category: "Pain Relief",
-    stock: "In Stock",
-  },
-  {
-    id: 4,
-    name: "Aspirin 100mg",
-    price: "$1.90",
-    category: "Pain Relief",
-    stock: "Limited",
-  },
-  {
-    id: 5,
-    name: "Metformin 500mg",
-    price: "$5.40",
-    category: "Diabetes",
-    stock: "In Stock",
-  },
-  {
-    id: 6,
-    name: "Lisinopril 10mg",
-    price: "$6.20",
-    category: "Blood Pressure",
-    stock: "In Stock",
-  },
-  {
-    id: 7,
-    name: "Atorvastatin 20mg",
-    price: "$7.10",
-    category: "Cholesterol",
-    stock: "In Stock",
-  },
-  {
-    id: 8,
-    name: "Omeprazole 20mg",
-    price: "$4.50",
-    category: "Gastric",
-    stock: "In Stock",
-  },
-];
+import { useSearchParams } from "next/navigation";
 
 export default function MedicinesPage() {
+  const medicines = [
+    {
+      id: 1,
+      name: "Paracetamol 500mg",
+      price: "$2.50",
+      category: "Pain Relief",
+      stock: "In Stock",
+    },
+    {
+      id: 2,
+      name: "Amoxicillin 250mg",
+      price: "$4.80",
+      category: "Antibiotics",
+      stock: "In Stock",
+    },
+    {
+      id: 3,
+      name: "Ibuprofen 400mg",
+      price: "$3.20",
+      category: "Pain Relief",
+      stock: "In Stock",
+    },
+    {
+      id: 4,
+      name: "Aspirin 100mg",
+      price: "$1.90",
+      category: "Pain Relief",
+      stock: "Limited",
+    },
+    {
+      id: 5,
+      name: "Metformin 500mg",
+      price: "$5.40",
+      category: "Diabetes",
+      stock: "In Stock",
+    },
+    {
+      id: 6,
+      name: "Lisinopril 10mg",
+      price: "$6.20",
+      category: "Blood Pressure",
+      stock: "In Stock",
+    },
+    {
+      id: 7,
+      name: "Atorvastatin 20mg",
+      price: "$7.10",
+      category: "Cholesterol",
+      stock: "In Stock",
+    },
+    {
+      id: 8,
+      name: "Omeprazole 20mg",
+      price: "$4.50",
+      category: "Gastric",
+      stock: "In Stock",
+    },
+  ];
+
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    setSearchTerm(searchParams.get("search") ?? "");
+  }, [searchParams]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
