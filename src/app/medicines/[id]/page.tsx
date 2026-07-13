@@ -61,12 +61,10 @@ export default function MedicineDetailPage() {
       <Navbar />
       <main className="list-main">
         <div className="list-search-panel">
-          <Link href="/medicines">
-            {" "}
-            <button onClick={() => {}} className="nav-button ghost">
-              <ArrowLeft size={18} />
-              Back to Search Results
-            </button>
+          {" "}
+          <Link href="/medicines" className="back-link">
+            <ArrowLeft size={18} />
+            Back to Search Results
           </Link>
         </div>
 
