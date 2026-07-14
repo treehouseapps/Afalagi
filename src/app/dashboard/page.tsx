@@ -6,18 +6,18 @@ export default function DashboardPage() {
       title: "Pharmacy Owner Dashboard",
       description:
         "Overview of pharmacy performance, alerts, and quick actions.",
-      href: "/dashboard/pharmacy",
+      href: "/pharmacy",
     },
     {
       title: "Manage Inventory",
       description:
         "Review inventory levels, update prices, and track stock status.",
-      href: "/dashboard/medicines",
+      href: "/pharmacy/medicines",
     },
     {
       title: "Stock Management",
       description: "Add medicines, adjust stock, and mark availability.",
-      href: "/dashboard/medicine",
+      href: "/pharmacy/medicines",
     },
   ];
 
