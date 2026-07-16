@@ -9,6 +9,7 @@ import Footer from "@/components/layout/Footer";
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
+  const submit = () => {};
   return (
     <div className="auth-page">
       <Navbar />
@@ -60,7 +61,7 @@ export default function LoginPage() {
                 </a>
               </div>
 
-              <button type="submit" className="auth-submit">
+              <button onClick={submit} type="submit" className="auth-submit">
                 Sign In
               </button>
             </form>

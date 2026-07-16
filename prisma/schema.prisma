@@ -14,8 +14,8 @@ model User {
   password  String
   phone     String?
   role      Role     @default(USER)
-
-  pharmacy  Pharmacy?
+  
+  pharmacies Pharmacy[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -25,7 +25,7 @@ model User {
 model Pharmacy {
   id          Int      @id @default(autoincrement())
 
-  ownerId     Int      @unique
+  ownerId     Int      
   owner       User     @relation(fields: [ownerId], references: [id])
 
   name        String
@@ -80,6 +80,6 @@ model Inventory {
 
 enum Role {
   USER
-  PHARMACY_OWNER
+  PHARMACIST
   ADMIN
 }
