@@ -31,14 +31,13 @@ export async function login(email: string, password: string) {
 
   const match = await bcrypt.compare(password, user.password);
 
-  const matchMsg: string = "Password not matched ";
   if (!match) {
     return {
       ok: false,
       error: "Incorrect password. Please try again.",
     };
   }
-  const token = createToken({
+  const token = await createToken({
     id: user.id,
     email: user.email,
     role: user.role,
@@ -48,12 +47,16 @@ export async function login(email: string, password: string) {
 
   cookieStore.set("token", token, {
     httpOnly: true,
-    secure: true,
     sameSite: "strict",
     maxAge: 60 * 60 * 24,
   });
 
   return { ok: true, role: user.role };
+}
+export async function logout() {
+  const cookieStore = await cookies();
+  cookieStore.delete("token");
+  return { ok: true };
 }
 export async function register() {
   return { ok: true };

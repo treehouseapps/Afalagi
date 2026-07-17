@@ -1,6 +1,12 @@
+"use client";
+
 import Link from "next/link";
+import { logout } from "@/actions/auth";
+import { useRouter } from "next/navigation";
 
 export default function AdminDashboardPage() {
+  const router = useRouter();
+
   const cards = [
     {
       title: "Medicine Catalog",
@@ -21,7 +27,14 @@ export default function AdminDashboardPage() {
       href: "/admin/verify",
     },
   ];
-
+  const logoutHandler = async () => {
+    const result = await logout();
+    if (!result.ok) {
+      alert("Logout failed. Please try again.");
+    } else {
+      router.push("/login");
+    }
+  };
   return (
     <main
       style={{
@@ -35,7 +48,30 @@ export default function AdminDashboardPage() {
           margin: "0 auto",
         }}
       >
-        <h1>Admin Dashboard</h1>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <h1>Admin Dashboard</h1>
+
+          <button
+            onClick={logoutHandler}
+            style={{
+              padding: "0.65rem 1.2rem",
+              border: "1px solid #ddd",
+              borderRadius: "12px",
+              background: "#fff",
+              cursor: "pointer",
+              fontSize: "0.95rem",
+              fontWeight: 500,
+            }}
+          >
+            Logout
+          </button>
+        </div>
 
         <p
           style={{
