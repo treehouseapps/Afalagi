@@ -1,15 +1,40 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { Activity, Menu, X, Eye, EyeOff } from "lucide-react";
+import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { login } from "@/actions/auth";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
-  const submit = () => {};
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError("");
+    setIsSubmitting(true);
+
+    try {
+      const result = await login(email, password);
+
+      if (!result.ok) {
+        setError(result.error ?? "Unable to sign in. Please try again.");
+        return;
+      }
+      router.push(result.role === "ADMIN" ? "/admin" : "/pharmacy");
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   return (
     <div className="auth-page">
       <Navbar />
@@ -21,7 +46,7 @@ export default function LoginPage() {
               <p>Sign in to your account to continue</p>
             </div>
 
-            <form className="auth-form">
+            <form className="auth-form" onSubmit={submit}>
               <div className="form-group">
                 <label htmlFor="email">Email Address</label>
                 <input
@@ -29,6 +54,8 @@ export default function LoginPage() {
                   id="email"
                   placeholder="you@example.com"
                   required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
 
@@ -40,6 +67,8 @@ export default function LoginPage() {
                     id="password"
                     placeholder="Enter your password"
                     required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                   <button
                     type="button"
@@ -61,8 +90,18 @@ export default function LoginPage() {
                 </a>
               </div>
 
-              <button onClick={submit} type="submit" className="auth-submit">
-                Sign In
+              {error && (
+                <p role="alert" className="error-message">
+                  {error}
+                </p>
+              )}
+
+              <button
+                type="submit"
+                className="auth-submit"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Signing in..." : "Sign In"}
               </button>
             </form>
 

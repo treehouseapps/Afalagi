@@ -1,7 +1,60 @@
-export async function login() {
-  return { ok: true };
-}
+"use server";
 
+import bcrypt from "bcryptjs";
+import { z } from "zod";
+import { prisma } from "@/lib/prisma";
+import { createToken } from "@/lib/jwt";
+import { cookies } from "next/headers";
+
+export async function login(email: string, password: string) {
+  const credentials = z
+    .object({
+      email: z.string().email(),
+      password: z.string().min(1),
+    })
+    .safeParse({ email, password });
+
+  if (!credentials.success) {
+    return { ok: false, error: "Enter a valid email and password." };
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!user) {
+    return {
+      ok: false,
+      error: "We couldn't find an account associated with this email address.",
+    };
+  }
+
+  const match = await bcrypt.compare(password, user.password);
+
+  const matchMsg: string = "Password not matched ";
+  if (!match) {
+    return {
+      ok: false,
+      error: "Incorrect password. Please try again.",
+    };
+  }
+  const token = createToken({
+    id: user.id,
+    email: user.email,
+    role: user.role,
+  });
+
+  const cookieStore = await cookies();
+
+  cookieStore.set("token", token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+    maxAge: 60 * 60 * 24,
+  });
+
+  return { ok: true, role: user.role };
+}
 export async function register() {
   return { ok: true };
 }

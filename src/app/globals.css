@@ -1075,7 +1075,7 @@ input {
 
 .item-header {
   display: flex;
-  align-items: start;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
   margin-bottom: 0.8rem;
@@ -1148,7 +1148,7 @@ input {
 
 .pharmacy-header {
   display: flex;
-  align-items: start;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
   margin-bottom: 1.2rem;
@@ -1425,6 +1425,10 @@ input {
 .icon-button:hover {
   box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
   transform: translateY(-2px);
+}
+.error-message {
+  color: #dc2626;
+  font-weight: 700;
 }
 
 @media (max-width: 900px) {
