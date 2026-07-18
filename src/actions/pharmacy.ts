@@ -7,6 +7,7 @@ import { createToken } from "@/lib/jwt";
 import { cookies } from "next/headers";
 import { getPharmacyDashboardData } from "@/services/pharmacy.service";
 import { getCurrentUser } from "@/lib/auth";
+import { getPharmacyProfile } from "@/services/pharmacy.service";
 
 export async function CreatePharmacy(
   userName: string,
@@ -93,7 +94,82 @@ export async function CreatePharmacy(
 
   return { ok: true };
 }
+export async function getMyProfile() {
+  const user = await getCurrentUser();
 
+  if (!user) return null;
+
+  const pharmacy = await prisma.pharmacy.findFirst({
+    where: {
+      ownerId: Number(user.id),
+    },
+    include: {
+      owner: true,
+    },
+  });
+
+  if (!pharmacy) return null;
+
+  return {
+    id: pharmacy.id,
+
+    name: pharmacy.name,
+    address: pharmacy.address,
+    city: pharmacy.city,
+    phone: pharmacy.phone ?? "",
+
+    ownerName: pharmacy.owner.name,
+    email: pharmacy.owner.email,
+
+    approved: pharmacy.approved,
+  };
+}
+
+export async function getMyPharmacyProfile() {
+  return await getPharmacyProfile();
+}
+export async function updateMyProfile(data: {
+  name: string;
+  address: string;
+  city: string;
+  phone: string;
+}) {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return {
+      ok: false,
+    };
+  }
+
+  const pharmacy = await prisma.pharmacy.findFirst({
+    where: {
+      ownerId: Number(user.id),
+    },
+  });
+
+  if (!pharmacy) {
+    return {
+      ok: false,
+    };
+  }
+
+  await prisma.pharmacy.update({
+    where: {
+      id: pharmacy.id,
+    },
+    data: {
+      name: data.name,
+      address: data.address,
+      city: data.city,
+      phone: data.phone,
+    },
+  });
+
+  return {
+    ok: true,
+  };
+}
 export async function getPharmacyDashboard() {
   const user = await getCurrentUser();
 

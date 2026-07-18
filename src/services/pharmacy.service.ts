@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 
 export async function getPharmacyDashboardData(userId: number) {
   const pharmacy = await prisma.pharmacy.findFirst({
@@ -41,5 +42,34 @@ export async function getPharmacyDashboardData(userId: number) {
       quantity: item.quantity,
       price: item.price,
     })),
+  };
+}
+export async function getPharmacyProfile() {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  const pharmacy = await prisma.pharmacy.findFirst({
+    where: {
+      ownerId: Number(user.id),
+    },
+    include: {
+      owner: true,
+    },
+  });
+
+  if (!pharmacy) {
+    throw new Error("Pharmacy not found");
+  }
+
+  return {
+    name: pharmacy.name,
+    phone: pharmacy.phone || "",
+    email: pharmacy.owner.email,
+    ownerName: pharmacy.owner.name,
+    address: `${pharmacy.address}, ${pharmacy.city}`,
+    approved: pharmacy.approved,
   };
 }
