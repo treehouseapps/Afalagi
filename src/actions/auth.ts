@@ -53,11 +53,9 @@ export async function login(email: string, password: string) {
 
   return { ok: true, role: user.role };
 }
+
 export async function logout() {
   const cookieStore = await cookies();
   cookieStore.delete("token");
-  return { ok: true };
-}
-export async function register() {
   return { ok: true };
 }

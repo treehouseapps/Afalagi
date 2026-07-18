@@ -1,9 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { Medicine, Prisma } from "@prisma/client";
-import {
-  CreateMedicineInput,
-  UpdateMedicineInput,
-} from "@/types/medicine";
+import { CreateMedicineInput, UpdateMedicineInput } from "@/types/medicine";
 
 export async function createMedicine(
   data: CreateMedicineInput,

@@ -16,8 +16,8 @@ export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
-  const submit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const submit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setError("");
     setIsSubmitting(true);
 

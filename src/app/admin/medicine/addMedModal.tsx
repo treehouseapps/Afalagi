@@ -13,9 +13,9 @@ export default function AddMedicineModal({
 }: AddMedicineModalProps) {
   if (!open) return null;
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    await createMedicineAction(new FormData(event.currentTarget));
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    await createMedicineAction(new FormData(e.currentTarget));
     onClose();
   }
 

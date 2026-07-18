@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddMedicineModal from "./addMedModal";
 import EditMedicineModal from "./editMedModal";
 import { Medicine as MedicineType } from "@/types/medicine";
+import { getMedicine } from "@/actions/medicine";
 
 type Medicine = MedicineType;
 
@@ -15,41 +16,30 @@ export default function AdminMedicinePage() {
     null,
   );
 
+  const [medicines, setMedicines] = useState<Medicine[]>([]);
+  const [loading, setLoading] = useState(true);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedManufacturers, setSelectedManufacturers] = useState("");
 
-  const medicines = [
-    {
-      id: 1,
-      name: "Panadol 500mg",
-      genericName: "Paracetamol",
-      category: "Analgesic",
-      manufacturer: "GSK",
-      price: 10,
-    },
-    {
-      id: 2,
-      name: "Amoxil 250mg",
-      genericName: "Amoxicillin",
-      category: "Antibiotic",
-      manufacturer: "GSK",
-      price: 25,
-    },
-    {
-      id: 3,
-      name: "Zyrtec 10mg",
-      genericName: "Cetirizine",
-      category: "Antihistamine",
-      manufacturer: "UCB",
-      price: 15,
-    },
-  ];
+  useEffect(() => {
+    async function loadMedicines() {
+      const data = await getMedicine();
+
+      setMedicines(data);
+      setLoading(false);
+    }
+
+    loadMedicines();
+  }, []);
 
   const filteredMedicines = medicines.filter((medicine) => {
+    const search = searchTerm.toLowerCase();
+
     const matchSearch =
-      medicine.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      medicine.genericName.toLowerCase().includes(searchTerm.toLowerCase());
+      medicine.name.toLowerCase().includes(search) ||
+      medicine.genericName?.toLowerCase().includes(search);
 
     const matchCategory =
       selectedCategory === "" || medicine.category === selectedCategory;
@@ -61,97 +51,64 @@ export default function AdminMedicinePage() {
     return matchSearch && matchCategory && matchManufacturer;
   });
 
-  const categories = [...new Set(medicines.map((m) => m.category))];
-  const manufacturers = [...new Set(medicines.map((m) => m.manufacturer))];
+  const categories = [
+    ...new Set(medicines.map((medicine) => medicine.category)),
+  ];
+
+  const manufacturers = [
+    ...new Set(
+      medicines
+        .map((medicine) => medicine.manufacturer)
+        .filter((manufacturer): manufacturer is string =>
+          Boolean(manufacturer),
+        ),
+    ),
+  ];
 
   return (
-    <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
+    <main className="admin-page">
       <h1>Admin Medicine Management</h1>
-      <p
-        style={{
-          maxWidth: "720px",
-          marginTop: "0.5rem",
-          color: "#555",
-        }}
-      >
+
+      <p>
         Manage the global medicine catalog, update medicine information, and
         monitor available inventory across pharmacies.
       </p>
-      {/* Medicine Controls */}
-      <section
-        style={{
-          marginTop: "1.75rem",
-          padding: "1.5rem",
-          border: "1px solid #ddd",
-          borderRadius: "18px",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            gap: "1rem",
-            flexWrap: "wrap",
-          }}
-        >
+
+      <section className="admin-section">
+        <div className="admin-section-header">
           <div>
             <h2>Medicine Catalog</h2>
 
-            <p
-              style={{
-                marginTop: "0.5rem",
-                color: "#666",
-              }}
-            >
+            <p>
               Add, edit, remove, and search medicines registered in the system.
             </p>
           </div>
 
           <button
+            className="admin-button primary"
             type="button"
             onClick={() => setOpenAddModal(true)}
-            style={{
-              padding: "0.8rem 1.2rem",
-            }}
           >
             Add Medicine
           </button>
         </div>
 
-        {/* Search and Filter */}
-
-        <div
-          style={{
-            display: "flex",
-            gap: "1rem",
-            marginTop: "1.5rem",
-            flexWrap: "wrap",
-          }}
-        >
+        <div className="admin-filter-area">
           <input
+            className="admin-input"
             type="text"
             placeholder="Search medicine name..."
+            value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            style={{
-              padding: "0.75rem",
-              flex: 1,
-              minWidth: "250px",
-              border: "1px solid #ddd",
-              borderRadius: "8px",
-            }}
           />
 
           <select
+            className="admin-select"
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            style={{
-              padding: "0.75rem",
-              border: "1px solid #ddd",
-              borderRadius: "8px",
-            }}
           >
-            <option value={""}>All Categories</option>
+            <option value="">All Categories</option>
+
             {categories.map((category) => (
               <option key={category} value={category}>
                 {category}
@@ -160,15 +117,11 @@ export default function AdminMedicinePage() {
           </select>
 
           <select
+            className="admin-select"
             value={selectedManufacturers}
             onChange={(e) => setSelectedManufacturers(e.target.value)}
-            style={{
-              padding: "0.75rem",
-              border: "1px solid #ddd",
-              borderRadius: "8px",
-            }}
           >
-            <option value={""}>All Manufacturers</option>
+            <option value="">All Manufacturers</option>
 
             {manufacturers.map((manufacturer) => (
               <option key={manufacturer} value={manufacturer}>
@@ -177,272 +130,116 @@ export default function AdminMedicinePage() {
             ))}
           </select>
         </div>
-      </section>{" "}
-      {/* Medicine Table */}
-      <section
-        style={{
-          marginTop: "1.75rem",
-          padding: "1.5rem",
-          border: "1px solid #ddd",
-          borderRadius: "18px",
-        }}
-      >
+      </section>
+
+      <section className="admin-section">
         <h2>All Medicines</h2>
 
-        <p
-          style={{
-            marginTop: "0.5rem",
-            color: "#666",
-          }}
-        >
-          View and manage medicines available in the global catalog.
-        </p>
+        <p>View and manage medicines available in the global catalog.</p>
 
-        <div
-          style={{
-            overflowX: "auto",
-            marginTop: "1rem",
-          }}
-        >
-          <table
-            style={{
-              width: "100%",
-              borderCollapse: "collapse",
-            }}
-          >
+        <div className="admin-table-wrapper">
+          <table className="admin-table">
             <thead>
               <tr>
-                <th
-                  style={{
-                    textAlign: "left",
-                    padding: "0.75rem",
-                    borderBottom: "1px solid #ddd",
-                  }}
-                >
-                  Name
-                </th>
+                <th>Name</th>
 
-                <th
-                  style={{
-                    textAlign: "left",
-                    padding: "0.75rem",
-                    borderBottom: "1px solid #ddd",
-                  }}
-                >
-                  Generic Name
-                </th>
+                <th>Generic Name</th>
 
-                <th
-                  style={{
-                    textAlign: "left",
-                    padding: "0.75rem",
-                    borderBottom: "1px solid #ddd",
-                  }}
-                >
-                  Category
-                </th>
+                <th>Category</th>
 
-                <th
-                  style={{
-                    textAlign: "left",
-                    padding: "0.75rem",
-                    borderBottom: "1px solid #ddd",
-                  }}
-                >
-                  Manufacturer
-                </th>
+                <th>Manufacturer</th>
 
-                <th
-                  style={{
-                    textAlign: "left",
-                    padding: "0.75rem",
-                    borderBottom: "1px solid #ddd",
-                  }}
-                >
-                  Price
-                </th>
+                <th>Price</th>
 
-                <th
-                  style={{
-                    padding: "0.75rem",
-                    borderBottom: "1px solid #ddd",
-                  }}
-                >
-                  Actions
-                </th>
+                <th>Actions</th>
               </tr>
             </thead>
 
             <tbody>
-              {filteredMedicines.map((medicine, index) => (
-                <tr
-                  key={medicine.id}
-                  style={{
-                    background: index % 2 === 0 ? "#fafafa" : "white",
-                  }}
-                >
-                  <td
-                    style={{
-                      padding: "0.75rem",
-                    }}
-                  >
-                    {medicine.name}
-                  </td>
-
-                  <td
-                    style={{
-                      padding: "0.75rem",
-                    }}
-                  >
-                    {medicine.genericName}
-                  </td>
-
-                  <td
-                    style={{
-                      padding: "0.75rem",
-                    }}
-                  >
-                    {medicine.category}
-                  </td>
-
-                  <td
-                    style={{
-                      padding: "0.75rem",
-                    }}
-                  >
-                    {medicine.manufacturer}
-                  </td>
-
-                  <td
-                    style={{
-                      padding: "0.75rem",
-                    }}
-                  >
-                    {medicine.price} Birr
-                  </td>
-
-                  <td
-                    style={{
-                      padding: "0.75rem",
-                    }}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedMedicine(medicine);
-                        setEditOpen(true);
-                      }}
-                      style={{
-                        marginRight: "0.5rem",
-                      }}
-                    >
-                      Edit
-                    </button>
-
-                    <button type="button">Delete</button>
+              {" "}
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="admin-empty">
+                    Loading medicines...
                   </td>
                 </tr>
-              ))}
+              ) : filteredMedicines.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="admin-empty">
+                    No medicine data available. Please add medicines.
+                  </td>
+                </tr>
+              ) : (
+                filteredMedicines.map((medicine) => (
+                  <tr key={medicine.id}>
+                    <td>{medicine.name}</td>
+
+                    <td>{medicine.genericName || "-"}</td>
+
+                    <td>{medicine.category}</td>
+
+                    <td>{medicine.manufacturer || "-"}</td>
+
+                    <td>{medicine.price ? `${medicine.price} Birr` : "-"}</td>
+
+                    <td>
+                      <button
+                        className="admin-action-button edit"
+                        type="button"
+                        onClick={() => {
+                          setSelectedMedicine(medicine);
+                          setEditOpen(true);
+                        }}
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        className="admin-action-button delete"
+                        type="button"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
-      </section>{" "}
-      {/* Inventory Overview */}
-      <section
-        style={{
-          marginTop: "1.75rem",
-          padding: "1.5rem",
-          border: "1px solid #ddd",
-          borderRadius: "18px",
-        }}
-      >
+      </section>
+
+      <section className="admin-section">
         <h2>Inventory Overview</h2>
 
-        <p
-          style={{
-            marginTop: "0.5rem",
-            color: "#666",
-          }}
-        >
-          Monitor medicine availability across registered pharmacies.
-        </p>
+        <p>Monitor medicine availability across registered pharmacies.</p>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: "1rem",
-            marginTop: "1rem",
-          }}
-        >
-          <div
-            style={{
-              padding: "1rem",
-              border: "1px solid #eee",
-              borderRadius: "14px",
-              background: "#fafafa",
-            }}
-          >
+        <div className="admin-stats-grid">
+          <div className="admin-stat-card">
             <h3>Total Medicines</h3>
 
-            <p
-              style={{
-                marginTop: "0.5rem",
-                fontSize: "1.5rem",
-                fontWeight: 700,
-              }}
-            >
-              3
-            </p>
+            <p className="admin-stat-number">{medicines.length}</p>
           </div>
 
-          <div
-            style={{
-              padding: "1rem",
-              border: "1px solid #eee",
-              borderRadius: "14px",
-              background: "#fafafa",
-            }}
-          >
+          <div className="admin-stat-card">
             <h3>Available Stock</h3>
 
-            <p
-              style={{
-                marginTop: "0.5rem",
-                fontSize: "1.5rem",
-                fontWeight: 700,
-              }}
-            >
-              2,540
-            </p>
+            <p className="admin-stat-number">0</p>
           </div>
 
-          <div
-            style={{
-              padding: "1rem",
-              border: "1px solid #eee",
-              borderRadius: "14px",
-              background: "#fafafa",
-            }}
-          >
+          <div className="admin-stat-card">
             <h3>Registered Pharmacies</h3>
 
-            <p
-              style={{
-                marginTop: "0.5rem",
-                fontSize: "1.5rem",
-                fontWeight: 700,
-              }}
-            >
-              120
-            </p>
+            <p className="admin-stat-number">0</p>
           </div>
         </div>
       </section>
+
       <AddMedicineModal
         open={openAddModal}
         onClose={() => setOpenAddModal(false)}
       />
+
       <EditMedicineModal
         open={editOpen}
         onClose={() => setEditOpen(false)}
