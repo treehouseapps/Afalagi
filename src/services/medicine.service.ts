@@ -45,3 +45,11 @@ export async function deleteMedicine(id: number): Promise<Medicine> {
     },
   });
 }
+
+export async function getAllMedicines() {
+  return await prisma.medicine.findMany({
+    orderBy: {
+      name: "asc",
+    },
+  });
+}

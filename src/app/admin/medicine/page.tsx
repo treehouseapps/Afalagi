@@ -5,7 +5,7 @@ import AddMedicineModal from "./addMedModal";
 import EditMedicineModal from "./editMedModal";
 import { Medicine as MedicineType } from "@/types/medicine";
 import { getMedicine } from "@/actions/medicine";
-
+import { deleteMedicineAction } from "@/actions/medicine";
 type Medicine = MedicineType;
 
 export default function AdminMedicinePage() {
@@ -64,7 +64,17 @@ export default function AdminMedicinePage() {
         ),
     ),
   ];
+  const handleDelete = async (id: number) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this medicine?",
+    );
 
+    if (!confirmDelete) return;
+
+    await deleteMedicineAction(id);
+
+    setMedicines((prev) => prev.filter((medicine) => medicine.id !== id));
+  };
   return (
     <main className="admin-page">
       <h1>Admin Medicine Management</h1>
@@ -195,6 +205,7 @@ export default function AdminMedicinePage() {
                       </button>
 
                       <button
+                        onClick={() => handleDelete(medicine.id)}
                         className="admin-action-button delete"
                         type="button"
                       >

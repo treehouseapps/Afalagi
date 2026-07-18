@@ -5,6 +5,8 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { createToken } from "@/lib/jwt";
 import { cookies } from "next/headers";
+import { getPharmacyDashboardData } from "@/services/pharmacy.service";
+import { getCurrentUser } from "@/lib/auth";
 
 export async function CreatePharmacy(
   userName: string,
@@ -91,4 +93,51 @@ export async function CreatePharmacy(
 
   return { ok: true };
 }
-export async function GetPharmacy() {}
+
+export async function getPharmacyDashboard() {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  return await getPharmacyDashboardData(user.id);
+}
+
+export async function getMyInventory() {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return [];
+  }
+
+  const pharmacy = await prisma.pharmacy.findFirst({
+    where: {
+      ownerId: Number(user.id),
+    },
+  });
+
+  if (!pharmacy) {
+    return [];
+  }
+
+  const inventory = await prisma.inventory.findMany({
+    where: {
+      pharmacyId: pharmacy.id,
+    },
+    include: {
+      medicine: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return inventory.map((item) => ({
+    id: item.medicine.id,
+    name: item.medicine.name,
+    category: item.medicine.category,
+    manufacturer: item.medicine.manufacturer,
+    available: item.quantity > 0,
+  }));
+}

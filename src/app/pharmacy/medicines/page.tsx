@@ -1,52 +1,42 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Edit2, Pill, Plus, Search, Trash2 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Edit2, Pill, Plus, Search } from "lucide-react";
 import Link from "next/link";
 
 import EditMedicineModal from "./EditMedModal";
 import styles from "../pharmacy.module.css";
 
+import { getMyInventory } from "@/actions/pharmacy";
+
 type Medicine = {
-  id: string;
+  id: number;
   name: string;
   category: string;
-  manufacturer?: string;
+  manufacturer?: string | null;
   available: boolean;
 };
 
-const initialMedicines: Medicine[] = [
-  {
-    id: "m1",
-    name: "Amoxicillin 500mg",
-    category: "Antibiotics",
-    manufacturer: "GSK",
-    available: true,
-  },
-  {
-    id: "m2",
-    name: "Paracetamol 500mg",
-    category: "Pain Relief",
-    manufacturer: "FarmaTech",
-    available: true,
-  },
-  {
-    id: "m3",
-    name: "Metformin 500mg",
-    category: "Diabetes",
-    manufacturer: "Merck",
-    available: false,
-  },
-];
-
 export default function MedicinesPage() {
-  const [medicines, setMedicines] = useState(initialMedicines);
+  const [medicines, setMedicines] = useState<Medicine[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [query, setQuery] = useState("");
 
   const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(
     null,
   );
+
+  useEffect(() => {
+    async function loadMedicines() {
+      const data = await getMyInventory();
+
+      setMedicines(data);
+      setLoading(false);
+    }
+
+    loadMedicines();
+  }, []);
 
   const filteredMedicines = useMemo(() => {
     return medicines.filter((medicine) =>
@@ -60,10 +50,6 @@ export default function MedicinesPage() {
     );
 
     setSelectedMedicine(null);
-  }
-
-  function removeMedicine(id: string) {
-    setMedicines((items) => items.filter((item) => item.id !== id));
   }
 
   return (
@@ -93,19 +79,21 @@ export default function MedicinesPage() {
             <thead>
               <tr>
                 <th>Medicine</th>
-
                 <th>Category</th>
-
                 <th>Manufacturer</th>
-
                 <th>Availability</th>
-
                 <th />
               </tr>
             </thead>
 
             <tbody>
-              {filteredMedicines.length ? (
+              {loading ? (
+                <tr>
+                  <td colSpan={5} className={styles.empty}>
+                    Loading medicines...
+                  </td>
+                </tr>
+              ) : filteredMedicines.length ? (
                 filteredMedicines.map((medicine) => (
                   <tr key={medicine.id}>
                     <td className={styles.medicineName}>
@@ -150,14 +138,14 @@ export default function MedicinesPage() {
         </div>
       </article>
 
-      {selectedMedicine && (
+      {/* {selectedMedicine && (
         <EditMedicineModal
           open={true}
           medicine={selectedMedicine}
           onClose={() => setSelectedMedicine(null)}
           onSave={updateMedicine}
         />
-      )}
+      )} */}
     </div>
   );
 }

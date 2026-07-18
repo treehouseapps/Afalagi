@@ -1,19 +1,19 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+
 import {
   Activity,
   ArrowUpRight,
   PackageSearch,
   ShieldCheck,
 } from "lucide-react";
+
 import styles from "./pharmacy.module.css";
 
-export default function PharmacyDashboardPage() {
-  const medicines = [
-    ["Paracetamol 500mg", "Pain Relief"],
-    ["Metformin 500mg", "Diabetes"],
-    ["Amoxicillin 500mg", "Antibiotics"],
-  ] as const;
+import { getPharmacyDashboard } from "@/actions/pharmacy";
+
+export default async function PharmacyDashboardPage() {
+  const data = await getPharmacyDashboard();
 
   return (
     <div className={styles.page}>
@@ -21,17 +21,17 @@ export default function PharmacyDashboardPage() {
         <Metric
           icon={<PackageSearch />}
           label="Total Medicines Listed"
-          value="142"
+          value={String(data.totalMedicines)}
         />
 
         <Metric
           icon={<Activity />}
-          label="Searches Last 7 Days"
-          value="1,249"
+          label="Recent Updates"
+          value={String(data.medicines.length)}
           extra={
             <span className={styles.growth}>
               <ArrowUpRight size={13} />
-              12%
+              Recent
             </span>
           }
         />
@@ -39,7 +39,7 @@ export default function PharmacyDashboardPage() {
         <Metric
           icon={<ShieldCheck />}
           label="Pharmacy Status"
-          value="Verified"
+          value={data.pharmacyStatus}
         />
       </section>
 
@@ -56,41 +56,49 @@ export default function PharmacyDashboardPage() {
               <tr>
                 <th>Medicine</th>
                 <th>Category</th>
-                <th />
+                <th>Stock</th>
+                <th></th>
               </tr>
             </thead>
 
             <tbody>
-              {medicines.map(([name, status]) => (
-                <tr key={name}>
-                  <td>
-                    <strong>{name}</strong>
-                  </td>
-
-                  <td>
-                    <span>{status}</span>
-                  </td>
-
-                  <td>
-                    <Link href="/pharmacy/medicines">Update availability</Link>
-                  </td>
+              {data.medicines.length === 0 ? (
+                <tr>
+                  <td colSpan={2}>No medicines added yet.</td>
                 </tr>
-              ))}
+              ) : (
+                data.medicines.map((medicine) => (
+                  <tr key={medicine.id}>
+                    <td>
+                      <strong>{medicine.name}</strong>
+                    </td>
+
+                    <td>{medicine.category}</td>
+
+                    <td>{medicine.quantity}</td>
+
+                    <td>
+                      <Link href="/pharmacy/medicines">Update</Link>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </article>
 
         <aside className={styles.tip}>
           <h2>
-            <ShieldCheck size={20} /> Best Practices
+            <ShieldCheck size={20} />
+            Best Practices
           </h2>
 
           <p>
-            Keeping medicine availability updated helps users find trusted
-            pharmacies and know where to visit.
+            Keep medicine quantity and availability updated so users can find
+            your pharmacy easily.
           </p>
 
-          <Link href="/pharmacy/medicines">Update Medicines Now</Link>
+          <Link href="/pharmacy/medicines">Manage Medicines</Link>
         </aside>
       </section>
     </div>

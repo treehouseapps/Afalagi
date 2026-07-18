@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { createMedicine, updateMedicine } from "@/services/medicine.service";
 import { medicineSchema } from "@/validators/medicine.schema";
 import { getMedicines } from "@/services/medicine.service";
+import { deleteMedicine } from "@/services/medicine.service";
+import { getAllMedicines } from "@/services/medicine.service";
 
 function optionalText(formData: FormData, field: string) {
   const value = formData.get(field);
@@ -42,4 +44,14 @@ export async function updateMedicineAction(formData: FormData) {
   await updateMedicine(id, getMedicineInput(formData));
 
   revalidatePath("/admin/medicine");
+}
+
+export async function deleteMedicineAction(id: number) {
+  await deleteMedicine(id);
+
+  revalidatePath("/admin/medicine");
+}
+
+export async function getMedicinesForPharmacy() {
+  return await getAllMedicines();
 }
