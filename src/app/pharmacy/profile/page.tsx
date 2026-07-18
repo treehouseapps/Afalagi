@@ -46,8 +46,6 @@ export default function ProfilePage() {
 
     setProfile(draft);
     setEditing(false);
-
-    // update action will be added later
   }
 
   const fields: [keyof Profile, string, ReactNode][] = [
