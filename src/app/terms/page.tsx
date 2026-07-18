@@ -1,9 +1,10 @@
 import Link from "next/link";
+import styles from "./terms.module.css";
 
 export default function TermsPage() {
   return (
-    <main className="terms-page">
-      <div className="terms-container">
+    <main className={styles["terms-page"]}>
+      <div className={styles["terms-container"]}>
         <h1>Afalagi Terms of Service</h1>
 
         <p>
@@ -77,7 +78,7 @@ export default function TermsPage() {
           </p>
         </section>
 
-        <Link href="/register" className="back-link">
+        <Link href="/register" className={styles["back-link"]}>
           Back to Registration
         </Link>
       </div>

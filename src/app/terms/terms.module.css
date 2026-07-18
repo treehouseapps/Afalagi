@@ -1,0 +1,50 @@
+.terms-page {
+  min-height: 100vh;
+  background: #f7f7f7;
+  padding: 40px 20px;
+}
+
+.terms-container {
+  max-width: 850px;
+  margin: auto;
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.terms-container h1 {
+  text-align: center;
+  color: #7f00ff;
+  margin-bottom: 20px;
+  font-size: 32px;
+}
+
+.terms-container h2 {
+  color: #333;
+  margin-top: 30px;
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.terms-container p {
+  color: #555;
+  line-height: 1.7;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.back-link {
+  display: inline-block;
+  margin-top: 30px;
+  background: #ff1e00;
+  color: white;
+  padding: 12px 22px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.back-link:hover {
+  opacity: 0.85;
+}
