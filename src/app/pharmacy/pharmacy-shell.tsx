@@ -30,7 +30,7 @@ export default function PharmacyShell({ children }: { children: ReactNode }) {
   const logoutHandler = async () => {
     const result = await logout();
     if (!result.ok) {
-      alert("Logout failed. Please try again.");
+      // alert("Logout failed. Please try again.");
     } else {
       router.push("/login");
     }
