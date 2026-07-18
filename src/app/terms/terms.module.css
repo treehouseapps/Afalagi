@@ -15,7 +15,7 @@
 
 .terms-container h1 {
   text-align: center;
-  color: #7f00ff;
+  color: #0f766e;
   margin-bottom: 20px;
   font-size: 32px;
 }
@@ -37,7 +37,7 @@
 .back-link {
   display: inline-block;
   margin-top: 30px;
-  background: #ff1e00;
+  background: #0f766e;
   color: white;
   padding: 12px 22px;
   border-radius: 8px;
