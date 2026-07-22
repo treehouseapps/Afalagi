@@ -20,11 +20,17 @@ export default function RegisterPage() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [cpassword, setCPassword] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const router = useRouter();
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
+
+    if (!termsAccepted) {
+      setError("Please agree to the Terms of Service and Privacy Policy.");
+      return;
+    }
 
     try {
       const result = await CreatePharmacy(
@@ -217,7 +223,13 @@ export default function RegisterPage() {
                   </div>
 
                   <label htmlFor="terms" className="checkbox-label info-row">
-                    <input type="checkbox" id="terms" />I agree to the{" "}
+                    <input
+                      type="checkbox"
+                      id="terms"
+                      checked={termsAccepted}
+                      onChange={(e) => setTermsAccepted(e.target.checked)}
+                    />
+                    I agree to the{" "}
                     <Link href="/terms" target="_blank" className="open">
                       Terms of Service
                     </Link>{" "}
