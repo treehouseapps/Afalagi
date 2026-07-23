@@ -28,7 +28,6 @@ export default function MedicinesPage() {
       const data = await getMyInventory();
 
       setMedicines(data);
-      console.log(data);
       setLoading(false);
     }
 
