@@ -9,3 +9,12 @@ export interface Pharmacy {
   longitude?: number;
   approved: boolean;
 }
+export type Profile = {
+  name: string;
+  ownerName: string;
+  phone: string;
+  email: string;
+  city: string;
+  address: string;
+  approved: boolean;
+};

@@ -5,9 +5,12 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { createToken } from "@/lib/jwt";
 import { cookies } from "next/headers";
-import { getPharmacyDashboardData } from "@/services/pharmacy.service";
 import { getCurrentUser } from "@/lib/auth";
-import { getPharmacyProfile } from "@/services/pharmacy.service";
+import {
+  getPharmacyDashboardData,
+  getPharmacyProfile,
+  updatePharmacyProfile,
+} from "@/services/pharmacy.service";
 
 export async function CreatePharmacy(
   userName: string,
@@ -134,41 +137,9 @@ export async function updateMyProfile(data: {
   city: string;
   phone: string;
 }) {
-  const user = await getCurrentUser();
+  const result = await updatePharmacyProfile(data);
 
-  if (!user) {
-    return {
-      ok: false,
-    };
-  }
-
-  const pharmacy = await prisma.pharmacy.findFirst({
-    where: {
-      ownerId: Number(user.id),
-    },
-  });
-
-  if (!pharmacy) {
-    return {
-      ok: false,
-    };
-  }
-
-  await prisma.pharmacy.update({
-    where: {
-      id: pharmacy.id,
-    },
-    data: {
-      name: data.name,
-      address: data.address,
-      city: data.city,
-      phone: data.phone,
-    },
-  });
-
-  return {
-    ok: true,
-  };
+  return result;
 }
 export async function getPharmacyDashboard() {
   const user = await getCurrentUser();

@@ -68,8 +68,40 @@ export async function getPharmacyProfile() {
     name: pharmacy.name,
     phone: pharmacy.phone || "",
     email: pharmacy.owner.email,
+    city: pharmacy.city,
     ownerName: pharmacy.owner.name,
-    address: `${pharmacy.address}, ${pharmacy.city}`,
+    address: pharmacy.address,
     approved: pharmacy.approved,
   };
+}
+export async function updatePharmacyProfile(data: {
+  name: string;
+  address: string;
+  city: string;
+  phone: string;
+}) {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return { ok: false };
+  }
+
+  const pharmacy = await prisma.pharmacy.findFirst({
+    where: {
+      ownerId: Number(user.id),
+    },
+  });
+
+  if (!pharmacy) {
+    return { ok: false };
+  }
+
+  await prisma.pharmacy.update({
+    where: {
+      id: pharmacy.id,
+    },
+    data,
+  });
+
+  return { ok: true };
 }

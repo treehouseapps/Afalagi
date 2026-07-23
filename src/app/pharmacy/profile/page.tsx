@@ -3,16 +3,10 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Edit2, Mail, MapPin, Phone, Save, Store } from "lucide-react";
 import styles from "../pharmacy.module.css";
-import { getMyPharmacyProfile } from "@/actions/pharmacy";
+import { Profile as ProfileType } from "../../../types/pharmacy";
+import { getMyPharmacyProfile, updateMyProfile } from "@/actions/pharmacy";
 
-type Profile = {
-  name: string;
-  ownerName: string;
-  phone: string;
-  email: string;
-  address: string;
-  approved: boolean;
-};
+type Profile = ProfileType;
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -41,8 +35,19 @@ export default function ProfilePage() {
     });
   };
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
+
+    if (!draft) return;
+
+    const result = await updateMyProfile({
+      name: draft.name,
+      phone: draft.phone,
+      address: draft.address,
+      city: draft.city,
+    });
+
+    if (!result.ok) return;
 
     setProfile(draft);
     setEditing(false);
@@ -51,7 +56,6 @@ export default function ProfilePage() {
   const fields: [keyof Profile, string, ReactNode][] = [
     ["phone", "Phone", <Phone size={16} />],
     ["email", "Email", <Mail size={16} />],
-    ["address", "Address", <MapPin size={16} />],
   ];
 
   return (
@@ -79,7 +83,8 @@ export default function ProfilePage() {
                 "Cancel edit"
               ) : (
                 <>
-                  <Edit2 size={16} /> Edit profile
+                  <Edit2 size={16} />
+                  Edit profile
                 </>
               )}
             </button>
@@ -121,16 +126,47 @@ export default function ProfilePage() {
                     label={label}
                     value={draft[key] as string}
                     onChange={(v) => update(key, v)}
-                    multiline={key === "address"}
                   />
                 </div>
               ))}
+
+              <div className={styles.contactField}>
+                <MapPin size={16} />
+
+                <div style={{ width: "100%" }}>
+                  {editing ? (
+                    <>
+                      <Field
+                        editing
+                        label="Address"
+                        value={draft.address}
+                        onChange={(v) => update("address", v)}
+                        multiline
+                      />
+
+                      <Field
+                        editing
+                        label="City"
+                        value={draft.city}
+                        onChange={(v) => update("city", v)}
+                      />
+                    </>
+                  ) : (
+                    <Field
+                      editing={false}
+                      label="Address"
+                      value={`${profile.address}, ${profile.city}`}
+                      onChange={() => {}}
+                    />
+                  )}
+                </div>
+              </div>
             </section>
           </div>
 
           {editing && (
             <div className={styles.saveBar}>
-              <button className={styles.primaryButton}>
+              <button type="submit" className={styles.primaryButton}>
                 <Save size={16} />
                 Save Profile Updates
               </button>
