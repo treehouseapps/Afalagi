@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { updateInventoryMedicine } from "@/actions/inventory";
+import styles from "../../../pharmacy.module.css";
 
 type Props = {
   medicine: {
@@ -36,30 +37,52 @@ export default function EditInventoryForm({ medicine }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Edit {medicine.name}</h2>
+    <div className={styles.page}>
+      <article
+        className={styles.card}
+        style={{
+          padding: "30px",
+        }}
+      >
+        <div className={styles.formHeader}>
+          <h2>Edit {medicine.name}</h2>
+          <p>Update inventory information</p>
+        </div>
 
-      <input
-        type="number"
-        value={quantity}
-        onChange={(e) => setQuantity(Number(e.target.value))}
-        placeholder="Quantity"
-      />
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <div className={styles.field}>
+            <label>Quantity</label>
+            <input
+              type="number"
+              value={quantity}
+              onChange={(e) => setQuantity(Number(e.target.value))}
+            />
+          </div>
 
-      <input
-        type="number"
-        value={price}
-        onChange={(e) => setPrice(e.target.value)}
-        placeholder="Price"
-      />
+          <div className={styles.field}>
+            <label>Price</label>
+            <input
+              type="number"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              placeholder="Enter price"
+            />
+          </div>
 
-      <input
-        type="date"
-        value={expiryDate}
-        onChange={(e) => setExpiryDate(e.target.value)}
-      />
+          <div className={styles.field}>
+            <label>Expiry Date</label>
+            <input
+              type="date"
+              value={expiryDate}
+              onChange={(e) => setExpiryDate(e.target.value)}
+            />
+          </div>
 
-      <button type="submit">Save</button>
-    </form>
+          <button type="submit" className={styles.primaryButton}>
+            Save Changes
+          </button>
+        </form>
+      </article>
+    </div>
   );
 }
