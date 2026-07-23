@@ -5,6 +5,9 @@ export interface Medicine {
   genericName?: string | null;
   manufacturer?: string | null;
   category: string;
+  quantity: number;
+  price?: number | null;
+  expiryDate?: Date | string | null;
 }
 
 export type CreateMedicineInput = {

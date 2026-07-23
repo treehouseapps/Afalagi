@@ -35,11 +35,15 @@ export async function getPharmacyDashboardData(userId: number) {
 
     medicines: pharmacy.inventory.map((item) => ({
       id: item.id,
-      medicineId: item.medicine.id,
+      medicineId: item.medicineId,
+
       name: item.medicine.name,
       category: item.medicine.category,
+      manufacturer: item.medicine.manufacturer,
+
       quantity: item.quantity,
       price: item.price,
+      expiryDate: item.expiryDate,
     })),
   };
 }

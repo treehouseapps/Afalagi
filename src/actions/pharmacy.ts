@@ -155,7 +155,11 @@ export async function getMyInventory() {
   const user = await getCurrentUser();
 
   if (!user) {
-    return [];
+    return {
+      pharmacyStatus: "No User",
+      totalMedicines: 0,
+      medicines: [],
+    };
   }
 
   const pharmacy = await prisma.pharmacy.findFirst({
@@ -165,7 +169,11 @@ export async function getMyInventory() {
   });
 
   if (!pharmacy) {
-    return [];
+    return {
+      pharmacyStatus: "No Pharmacy",
+      totalMedicines: 0,
+      medicines: [],
+    };
   }
 
   const inventory = await prisma.inventory.findMany({
@@ -180,12 +188,18 @@ export async function getMyInventory() {
     },
   });
 
-  return inventory.map((item) => ({
-    id: item.id,
-    medicineId: item.medicine.id,
-    name: item.medicine.name,
-    category: item.medicine.category,
-    manufacturer: item.medicine.manufacturer,
-    available: item.quantity > 0,
-  }));
+  return {
+    pharmacyStatus: pharmacy.approved ? "Approved" : "Pending Approval",
+    totalMedicines: inventory.length,
+    medicines: inventory.map((item) => ({
+      id: item.id,
+      medicineId: item.medicine.id,
+      name: item.medicine.name,
+      category: item.medicine.category,
+      manufacturer: item.medicine.manufacturer,
+      quantity: item.quantity,
+      price: item.price,
+      expiryDate: item.expiryDate,
+    })),
+  };
 }

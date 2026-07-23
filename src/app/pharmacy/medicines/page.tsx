@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Pill, Plus, Search, Trash2 } from "lucide-react";
-import { removeMedicine } from "@/actions/inventory";
+import { Pill, Plus, Search, Trash2, Edit } from "lucide-react";
 import Link from "next/link";
+
+import { removeMedicine } from "@/actions/inventory";
+import { getMyInventory } from "@/actions/pharmacy";
 import { Medicine as MedicineType } from "@/types/medicine";
 
 import styles from "../pharmacy.module.css";
-
-import { getMyInventory } from "@/actions/pharmacy";
 
 type Medicine = MedicineType;
 
@@ -22,19 +22,23 @@ export default function MedicinesPage() {
     async function loadMedicines() {
       const data = await getMyInventory();
 
-      setMedicines(data);
+      setMedicines(data.medicines);
       setLoading(false);
     }
 
     loadMedicines();
   }, []);
+
   async function handleRemove(id: number) {
     const confirmDelete = confirm("Remove this medicine from your pharmacy?");
 
     if (!confirmDelete) return;
+
     const result = await removeMedicine(id);
 
     alert(result.message);
+
+    setMedicines((prev) => prev.filter((medicine) => medicine.id !== id));
   }
 
   const filteredMedicines = useMemo(() => {
@@ -72,7 +76,9 @@ export default function MedicinesPage() {
                 <th>Medicine</th>
                 <th>Category</th>
                 <th>Manufacturer</th>
-                <th>Availability</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Expiry Date</th>
                 <th />
               </tr>
             </thead>
@@ -80,7 +86,7 @@ export default function MedicinesPage() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={5} className={styles.empty}>
+                  <td colSpan={7} className={styles.empty}>
                     Loading medicines...
                   </td>
                 </tr>
@@ -97,9 +103,23 @@ export default function MedicinesPage() {
 
                     <td>{medicine.manufacturer || "-"}</td>
 
+                    <td>{medicine.quantity}</td>
+
+                    <td>{medicine.price ? `${medicine.price} ETB` : "-"}</td>
+
+                    <td>
+                      {medicine.expiryDate
+                        ? new Date(medicine.expiryDate).toLocaleDateString()
+                        : "-"}
+                    </td>
+
                     <td className={styles.rowActions}>
+                      <button aria-label="Edit medicine">
+                        <Edit size={16} />
+                      </button>
+
                       <button
-                        aria-label="Edit medicine"
+                        aria-label="Delete medicine"
                         onClick={() => handleRemove(medicine.id)}
                       >
                         <Trash2 size={16} />
@@ -109,7 +129,7 @@ export default function MedicinesPage() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={5} className={styles.empty}>
+                  <td colSpan={7} className={styles.empty}>
                     No medicines found.
                   </td>
                 </tr>
