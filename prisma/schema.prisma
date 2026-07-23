@@ -53,7 +53,6 @@ model Medicine {
   description String?
   category    String
   manufacturer String?
-  price       Float?
   inventory Inventory[]
 
   createdAt DateTime @default(now())
