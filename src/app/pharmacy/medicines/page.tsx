@@ -4,18 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import { Pill, Plus, Search, Trash2 } from "lucide-react";
 import { removeMedicine } from "@/actions/inventory";
 import Link from "next/link";
+import { Medicine as MedicineType } from "@/types/medicine";
 
 import styles from "../pharmacy.module.css";
 
 import { getMyInventory } from "@/actions/pharmacy";
 
-type Medicine = {
-  id: number;
-  name: string;
-  category: string;
-  manufacturer?: string | null;
-  available: boolean;
-};
+type Medicine = MedicineType;
 
 export default function MedicinesPage() {
   const [medicines, setMedicines] = useState<Medicine[]>([]);
