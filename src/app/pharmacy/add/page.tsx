@@ -1,68 +1,35 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Search, Plus, Pill, CheckCircle } from "lucide-react";
-import { Medicine as MedicineType } from "@/types/medicine";
-
+import { useState, useEffect } from "react";
+import { Search, Plus, Pill } from "lucide-react";
 import styles from "../../pharmacy/pharmacy.module.css";
-
-type Medicine = MedicineType;
-
-const medicines: Medicine[] = [
-  {
-    id: 1,
-    name: "Amoxicillin 500mg",
-    genericName: "Amoxicillin",
-    category: "Antibiotics",
-    manufacturer: "GSK",
-    price: 120,
-  },
-  {
-    id: 2,
-    name: "Amoxicillin 500mg",
-    genericName: "Amoxicillin",
-    category: "Antibiotics",
-    manufacturer: "Pharma Ethiopia",
-    price: 110,
-  },
-  {
-    id: 3,
-    name: "Paracetamol 500mg",
-    genericName: "Paracetamol",
-    category: "Pain Relief",
-    manufacturer: "FarmaTech",
-    price: 35,
-  },
-  {
-    id: 4,
-    name: "Metformin 500mg",
-    genericName: "Metformin",
-    category: "Diabetes",
-    manufacturer: "Merck",
-    price: 90,
-  },
-];
+import { getMedicine } from "@/actions/medicine";
+import { Medicine as MedicineType } from "@/types/medicine";
+import { addMedicineToPharmacy } from "@/actions/inventory";
 
 export default function AddMedicinePage() {
   const [query, setQuery] = useState("");
 
-  const [added, setAdded] = useState<number[]>([]);
+  const [medicines, setMedicines] = useState<MedicineType[]>([]);
 
-  const filteredMedicines = useMemo(() => {
-    return medicines.filter((medicine) =>
-      medicine.name.toLowerCase().includes(query.toLowerCase()),
-    );
-  }, [query]);
+  useEffect(() => {
+    async function loadMedicines() {
+      const data = await getMedicine();
+      setMedicines(data);
+    }
 
-  function addMedicine(id: number) {
-    setAdded((current) => (current.includes(id) ? current : [...current, id]));
+    loadMedicines();
+  }, []);
+
+  async function handleAdd(medicineId: number) {
+    await addMedicineToPharmacy(medicineId);
   }
+
   return (
     <div className={styles.page}>
       <div className={styles.toolbar}>
         <div>
           <h1>Add Medicine</h1>
-
           <p className={styles.help}>
             Search Afalagi medicine catalog and add medicines available in your
             pharmacy.
@@ -73,63 +40,40 @@ export default function AddMedicinePage() {
       <article className={styles.card}>
         <div className={styles.inventorySearch}>
           <Search size={17} />
-
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search medicine name..."
+            placeholder="Search medicine..."
           />
         </div>
 
         <div className={styles.catalog}>
-          {filteredMedicines.length ? (
-            filteredMedicines.map((medicine) => {
-              const alreadyAdded = added.includes(medicine.id);
+          {medicines.length > 0 ? (
+            medicines.map((medicine) => (
+              <div key={medicine.id} className={styles.catalogItem}>
+                <div className={styles.selectedMed}>
+                  <Pill size={20} />
 
-              return (
-                <div key={medicine.id} className={styles.catalogItem}>
-                  <div className={styles.selectedMed}>
-                    <Pill size={20} />
+                  <span>
+                    <strong>{medicine.name}</strong>
 
-                    <span>
-                      <strong>{medicine.name}</strong>
+                    <small>
+                      {medicine.genericName} · {medicine.category}
+                    </small>
 
-                      <small>
-                        {medicine.genericName}
-                        {" · "}
-                        {medicine.category}
-                      </small>
-
-                      <small>
-                        Manufacturer: {medicine.manufacturer || "-"}
-                      </small>
-                    </span>
-                  </div>
-
-                  <button
-                    className={
-                      alreadyAdded
-                        ? styles.secondaryButton
-                        : styles.primaryButton
-                    }
-                    disabled={alreadyAdded}
-                    onClick={() => addMedicine(medicine.id)}
-                  >
-                    {alreadyAdded ? (
-                      <>
-                        <CheckCircle size={16} />
-                        Added
-                      </>
-                    ) : (
-                      <>
-                        <Plus size={16} />
-                        Add Medicine
-                      </>
-                    )}
-                  </button>
+                    <small>Manufacturer: {medicine.manufacturer || "-"}</small>
+                  </span>
                 </div>
-              );
-            })
+
+                <button
+                  onClick={() => handleAdd(medicine.id)}
+                  className={styles.primaryButton}
+                >
+                  <Plus size={16} />
+                  Add Medicine
+                </button>
+              </div>
+            ))
           ) : (
             <div className={styles.empty}>No medicines found.</div>
           )}

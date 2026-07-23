@@ -11,7 +11,7 @@ export async function createMedicine(
 }
 
 export async function getMedicines(): Promise<Medicine[]> {
-  return prisma.medicine.findMany({
+  return await prisma.medicine.findMany({
     orderBy: {
       createdAt: "desc",
     },

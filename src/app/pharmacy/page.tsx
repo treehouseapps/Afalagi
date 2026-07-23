@@ -75,7 +75,7 @@ export default async function PharmacyDashboardPage() {
 
                     <td>{medicine.category}</td>
 
-                    <td>{medicine.quantity}</td>
+                    <td>{data.totalMedicines}</td>
 
                     <td>
                       <Link href="/pharmacy/medicines">Update</Link>

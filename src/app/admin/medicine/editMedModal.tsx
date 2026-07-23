@@ -136,19 +136,6 @@ export default function EditMedicineModal({
             </div>
 
             <div>
-              <label style={labelStyle}>Price</label>
-
-              <input
-                type="number"
-                name="price"
-                min="0"
-                step="0.01"
-                defaultValue={medicine.price ?? ""}
-                style={inputStyle}
-              />
-            </div>
-
-            <div>
               <label style={labelStyle}>Description</label>
 
               <textarea

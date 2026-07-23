@@ -190,8 +190,6 @@ export default function AdminMedicinePage() {
 
                     <td>{medicine.manufacturer || "-"}</td>
 
-                    <td>{medicine.price ? `${medicine.price} Birr` : "-"}</td>
-
                     <td>
                       <button
                         className="admin-action-button edit"

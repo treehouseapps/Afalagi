@@ -22,7 +22,6 @@ export async function getPharmacyDashboardData(userId: number) {
   if (!pharmacy) {
     throw new Error("Pharmacy not found");
   }
-
   const totalMedicines = await prisma.inventory.count({
     where: {
       pharmacyId: pharmacy.id,

@@ -49,3 +49,42 @@ export async function deleteInventory(id: number) {
     },
   });
 }
+
+export async function addMedicineToPharm(medicineId: number, userId: number) {
+  const pharmacy = await prisma.pharmacy.findFirst({
+    where: {
+      ownerId: userId,
+    },
+  });
+
+  if (!pharmacy) {
+    throw new Error("Pharmacy not found");
+  }
+
+  const existing = await prisma.inventory.findFirst({
+    where: {
+      pharmacyId: pharmacy.id,
+      medicineId,
+    },
+  });
+
+  if (existing) {
+    return {
+      success: false,
+      message: "Medicine already added",
+    };
+  }
+
+  await prisma.inventory.create({
+    data: {
+      pharmacyId: pharmacy.id,
+      medicineId,
+      quantity: 0,
+    },
+  });
+
+  return {
+    success: true,
+    message: "Medicine added",
+  };
+}

@@ -5,7 +5,10 @@ import {
   addInventory,
   updateInventory,
   deleteInventory,
+  addMedicineToPharm,
 } from "@/services/inventory.service";
+import { cookies } from "next/headers";
+import { verifyToken } from "@/lib/jwt";
 
 export async function addInventoryAction(data: {
   pharmacyId: number;
@@ -34,6 +37,20 @@ export async function updateInventoryAction(
 
 export async function deleteInventoryAction(id: number) {
   await deleteInventory(id);
+
+  revalidatePath("/pharmacy/medicines");
+}
+
+export async function addMedicineToPharmacy(medicineId: number) {
+  const token = cookies().get("token")?.value;
+
+  if (!token) throw new Error("Not authenticated");
+
+  const result = await verifyToken(token);
+
+  const userId = result.payload.id;
+
+  await addMedicineToPharm(medicineId, Number(userId));
 
   revalidatePath("/pharmacy/medicines");
 }
