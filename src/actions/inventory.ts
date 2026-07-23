@@ -9,6 +9,7 @@ import {
 } from "@/services/inventory.service";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/jwt";
+import { removeMedicineFromPharmacy } from "@/services/inventory.service";
 
 export async function addInventoryAction(data: {
   pharmacyId: number;
@@ -53,4 +54,12 @@ export async function addMedicineToPharmacy(medicineId: number) {
   await addMedicineToPharm(medicineId, Number(userId));
 
   revalidatePath("/pharmacy/medicines");
+}
+
+export async function removeMedicine(inventoryId: number) {
+  const result = await removeMedicineFromPharmacy(inventoryId);
+
+  revalidatePath("/pharmacy/inventory");
+
+  return result;
 }

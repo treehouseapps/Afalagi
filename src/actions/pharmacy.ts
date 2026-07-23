@@ -181,7 +181,8 @@ export async function getMyInventory() {
   });
 
   return inventory.map((item) => ({
-    id: item.medicine.id,
+    id: item.id,
+    medicineId: item.medicine.id,
     name: item.medicine.name,
     category: item.medicine.category,
     manufacturer: item.medicine.manufacturer,

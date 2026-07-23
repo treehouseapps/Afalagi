@@ -88,3 +88,27 @@ export async function addMedicineToPharm(medicineId: number, userId: number) {
     message: "Medicine added",
   };
 }
+
+export async function removeMedicineFromPharmacy(inventoryId: number) {
+  console.log("invvvvvvvvvvvvv ", inventoryId);
+  const inventory = await prisma.inventory.findUnique({
+    where: {
+      id: inventoryId,
+    },
+  });
+
+  if (!inventory) {
+    throw new Error("Medicine not found in pharmacy");
+  }
+
+  await prisma.inventory.delete({
+    where: {
+      id: inventoryId,
+    },
+  });
+
+  return {
+    success: true,
+    message: "Medicine removed",
+  };
+}

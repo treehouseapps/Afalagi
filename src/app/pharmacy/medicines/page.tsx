@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Edit2, Pill, Plus, Search } from "lucide-react";
+import { Pill, Plus, Search, Trash2 } from "lucide-react";
+import { removeMedicine } from "@/actions/inventory";
 import Link from "next/link";
 
-import EditMedicineModal from "./EditMedModal";
 import styles from "../pharmacy.module.css";
 
 import { getMyInventory } from "@/actions/pharmacy";
@@ -23,34 +23,31 @@ export default function MedicinesPage() {
 
   const [query, setQuery] = useState("");
 
-  const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(
-    null,
-  );
-
   useEffect(() => {
     async function loadMedicines() {
       const data = await getMyInventory();
 
       setMedicines(data);
+      console.log(data);
       setLoading(false);
     }
 
     loadMedicines();
   }, []);
+  async function handleRemove(id: number) {
+    const confirmDelete = confirm("Remove this medicine from your pharmacy?");
+
+    if (!confirmDelete) return;
+    const result = await removeMedicine(id);
+
+    alert(result.message);
+  }
 
   const filteredMedicines = useMemo(() => {
     return medicines.filter((medicine) =>
       medicine.name.toLowerCase().includes(query.toLowerCase()),
     );
   }, [medicines, query]);
-
-  function updateMedicine(updated: Medicine) {
-    setMedicines((items) =>
-      items.map((item) => (item.id === updated.id ? updated : item)),
-    );
-
-    setSelectedMedicine(null);
-  }
 
   return (
     <div className={styles.page}>
@@ -106,22 +103,12 @@ export default function MedicinesPage() {
 
                     <td>{medicine.manufacturer || "-"}</td>
 
-                    <td>
-                      <span
-                        className={
-                          medicine.available ? styles.inStock : styles.outStock
-                        }
-                      >
-                        {medicine.available ? "Available" : "Unavailable"}
-                      </span>
-                    </td>
-
                     <td className={styles.rowActions}>
                       <button
                         aria-label="Edit medicine"
-                        onClick={() => setSelectedMedicine(medicine)}
+                        onClick={() => handleRemove(medicine.id)}
                       >
-                        <Edit2 size={16} />
+                        <Trash2 size={16} />
                       </button>
                     </td>
                   </tr>
@@ -137,15 +124,6 @@ export default function MedicinesPage() {
           </table>
         </div>
       </article>
-
-      {/* {selectedMedicine && (
-        <EditMedicineModal
-          open={true}
-          medicine={selectedMedicine}
-          onClose={() => setSelectedMedicine(null)}
-          onSave={updateMedicine}
-        />
-      )} */}
     </div>
   );
 }
