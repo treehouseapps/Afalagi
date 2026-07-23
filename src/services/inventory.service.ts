@@ -142,7 +142,7 @@ export async function updateInventoryMed(data: {
   price: number | null;
   expiryDate: Date | null;
 }) {
-  prisma.inventory.update({
+  return prisma.inventory.update({
     where: {
       id: data.id,
     },
