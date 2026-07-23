@@ -114,9 +114,11 @@ export default function MedicinesPage() {
                     </td>
 
                     <td className={styles.rowActions}>
-                      <button aria-label="Edit medicine">
-                        <Edit size={16} />
-                      </button>
+                      <Link href={`/pharmacy/medicines/${medicine.id}/edit`}>
+                        <button aria-label="Edit medicine">
+                          <Edit size={16} />
+                        </button>
+                      </Link>
 
                       <button
                         aria-label="Delete medicine"

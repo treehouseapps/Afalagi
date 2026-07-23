@@ -112,3 +112,45 @@ export async function removeMedicineFromPharmacy(inventoryId: number) {
     message: "Medicine removed",
   };
 }
+
+export async function getinventorymed(id: number) {
+  const item = await prisma.inventory.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      medicine: true,
+    },
+  });
+
+  if (!item) {
+    return null;
+  }
+
+  return {
+    id: item.id,
+    name: item.medicine.name,
+    quantity: item.quantity,
+    price: item.price,
+    expiryDate: item.expiryDate,
+  };
+}
+
+export async function updateInventoryMed(data: {
+  id: number;
+  quantity: number;
+  price: number | null;
+  expiryDate: Date | null;
+}) {
+  prisma.inventory.update({
+    where: {
+      id: data.id,
+    },
+
+    data: {
+      quantity: data.quantity,
+      price: data.price,
+      expiryDate: data.expiryDate,
+    },
+  });
+}
