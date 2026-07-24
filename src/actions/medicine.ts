@@ -58,3 +58,6 @@ export async function getMedicinesForPharmacy() {
 export async function getAllMedicine() {
   return await getAllMedicines();
 }
+export async function getMedicineById() {
+  return;
+}

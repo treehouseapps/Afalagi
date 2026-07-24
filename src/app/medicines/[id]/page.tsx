@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
+import { Medicine } from "@/types/medicine";
+import { getMedicineById } from "@/actions/medicine";
 
 const medicineData = {
   name: "Paracetamol 500mg",
@@ -58,6 +60,13 @@ const availablePharmacies = [
 ];
 
 export default function MedicineDetailPage() {
+  const [medicine, setMedicine] = useState<Medicine[]>([]);
+
+  const getMedicine = async () => {
+    const result = await getMedicineById();
+    // setMedicine(result);
+  };
+
   const availableCount = availablePharmacies.filter((p) => p.inStock).length;
 
   return (
