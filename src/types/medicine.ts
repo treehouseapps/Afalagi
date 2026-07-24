@@ -10,6 +10,17 @@ export interface Medicine {
   expiryDate?: Date | string | null;
 }
 
+export type InventoryMedicine = {
+  id: number;
+  name: string;
+  description?: string | null;
+  genericName?: string | null;
+  manufacturer?: string | null;
+  category: string;
+  price?: number | null;
+  expiryDate?: Date | string | null;
+};
+
 export type CreateMedicineInput = {
   name: string;
   genericName?: string;

@@ -90,7 +90,6 @@ export async function addMedicineToPharm(medicineId: number, userId: number) {
 }
 
 export async function removeMedicineFromPharmacy(inventoryId: number) {
-  console.log("invvvvvvvvvvvvv ", inventoryId);
   const inventory = await prisma.inventory.findUnique({
     where: {
       id: inventoryId,

@@ -55,3 +55,6 @@ export async function deleteMedicineAction(id: number) {
 export async function getMedicinesForPharmacy() {
   return await getAllMedicines();
 }
+export async function getAllMedicine() {
+  return await getAllMedicines();
+}

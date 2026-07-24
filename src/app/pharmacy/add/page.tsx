@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Search, Plus, Pill } from "lucide-react";
 import styles from "../../pharmacy/pharmacy.module.css";
 import { getMedicine } from "@/actions/medicine";
-import { Medicine as MedicineType } from "@/types/medicine";
+import { InventoryMedicine as MedicineType } from "@/types/medicine";
 import { addMedicineToPharmacy } from "@/actions/inventory";
 
 export default function AddMedicinePage() {

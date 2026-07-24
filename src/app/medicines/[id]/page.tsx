@@ -80,6 +80,40 @@ export default function MedicineDetailPage() {
           </div>
         </div>
 
+        <div
+          className="list-container single-col"
+          style={{ marginTop: "2px", gap: "1px" }}
+        >
+          <div className="filter-header">
+            <Info size={20} />
+            <h3>About this Medicine</h3>
+          </div>
+
+          <div className="items-grid">
+            <div className="item-card">
+              <div className="filter-header">
+                <Pill size={20} /> Description
+              </div>
+              <p>{medicineData.description}</p>
+            </div>
+
+            <div className="item-card">
+              <div className="filter-header">
+                <Activity size={20} /> Dosage
+              </div>
+              <p>{medicineData.dosage}</p>
+            </div>
+
+            <div className="item-card">
+              <div className="filter-header">
+                <AlertCircle size={20} /> Side Effects
+              </div>
+              <p>{medicineData.sideEffects}</p>
+            </div>
+          </div>
+        </div>
+        <br />
+        <br />
         <div className="list-container single-col">
           <div className="filter-header">
             <div className="brand-icon">
@@ -128,36 +162,6 @@ export default function MedicineDetailPage() {
                 <MapIcon size={32} />
                 <span>View on Map (Coming Soon)</span>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="list-container single-col">
-          <div className="filter-header">
-            <Info size={20} />
-            <h3>About this Medicine</h3>
-          </div>
-
-          <div className="items-grid">
-            <div className="item-card">
-              <div className="filter-header">
-                <Pill size={20} /> Description
-              </div>
-              <p>{medicineData.description}</p>
-            </div>
-
-            <div className="item-card">
-              <div className="filter-header">
-                <Activity size={20} /> Dosage
-              </div>
-              <p>{medicineData.dosage}</p>
-            </div>
-
-            <div className="item-card">
-              <div className="filter-header">
-                <AlertCircle size={20} /> Side Effects
-              </div>
-              <p>{medicineData.sideEffects}</p>
             </div>
           </div>
         </div>

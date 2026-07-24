@@ -6,70 +6,20 @@ import { Search, MapPin, Star, Filter } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useSearchParams } from "next/navigation";
+import { getAllMedicine } from "@/actions/medicine";
+import { InventoryMedicine as medicineType } from "@/types/medicine";
 
 export default function MedicinesPage() {
-  const medicines = [
-    {
-      id: 1,
-      name: "Paracetamol 500mg",
-      price: "$2.50",
-      category: "Pain Relief",
-      stock: "In Stock",
-    },
-    {
-      id: 2,
-      name: "Amoxicillin 250mg",
-      price: "$4.80",
-      category: "Antibiotics",
-      stock: "In Stock",
-    },
-    {
-      id: 3,
-      name: "Ibuprofen 400mg",
-      price: "$3.20",
-      category: "Pain Relief",
-      stock: "In Stock",
-    },
-    {
-      id: 4,
-      name: "Aspirin 100mg",
-      price: "$1.90",
-      category: "Pain Relief",
-      stock: "Limited",
-    },
-    {
-      id: 5,
-      name: "Metformin 500mg",
-      price: "$5.40",
-      category: "Diabetes",
-      stock: "In Stock",
-    },
-    {
-      id: 6,
-      name: "Lisinopril 10mg",
-      price: "$6.20",
-      category: "Blood Pressure",
-      stock: "In Stock",
-    },
-    {
-      id: 7,
-      name: "Atorvastatin 20mg",
-      price: "$7.10",
-      category: "Cholesterol",
-      stock: "In Stock",
-    },
-    {
-      id: 8,
-      name: "Omeprazole 20mg",
-      price: "$4.50",
-      category: "Gastric",
-      stock: "In Stock",
-    },
-  ];
+  const [medicines, setMedicines] = useState<medicineType[]>([]);
+  const getmed = async () => {
+    const result = await getAllMedicine();
+    setMedicines(result);
+  };
 
   const searchParams = useSearchParams();
 
   useEffect(() => {
+    getmed();
     setSearchTerm(searchParams.get("search") ?? "");
   }, [searchParams]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -79,10 +29,13 @@ export default function MedicinesPage() {
     "All",
     "Pain Relief",
     "Antibiotics",
-    "Diabetes",
     "Blood Pressure",
-    "Cholesterol",
+    "Diabetes",
     "Gastric",
+    "Allergy",
+    "Respiratory",
+    "Vitamins & Supplements",
+    "Antifungal",
   ];
 
   const filtered = medicines.filter((med) => {
@@ -143,16 +96,21 @@ export default function MedicinesPage() {
               filtered.map((med) => (
                 <div key={med.id} className="item-card">
                   <div className="item-header">
-                    <h3>{med.name}</h3>
-                    <span
-                      className={`stock-badge ${med.stock === "In Stock" ? "in-stock" : "limited"}`}
-                    >
-                      {med.stock}
-                    </span>
+                    <div>
+                      <h3 className="item-title">{med.name}</h3>
+                      <p className="item-category">{med.category}</p>
+                    </div>
+
+                    <span className="stock-badge in-stock">Available</span>
                   </div>
-                  <p className="item-category">{med.category}</p>
+
+                  <div className="item-body">
+                    <p className="item-manufacturer">
+                      {med.manufacturer || "Unknown Manufacturer"}
+                    </p>
+                  </div>
+
                   <div className="item-footer">
-                    <span className="item-price">{med.price}</span>
                     <Link href={`/medicines/${med.id}`} className="item-link">
                       View Details
                     </Link>
