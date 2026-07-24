@@ -53,3 +53,16 @@ export async function getAllMedicines() {
     },
   });
 }
+export async function getMedById(medId: number) {
+  return await prisma.inventory.findMany({
+    where: {
+      medicine: {
+        id: medId,
+      },
+    },
+    include: {
+      medicine: true,
+      pharmacy: true,
+    },
+  });
+}

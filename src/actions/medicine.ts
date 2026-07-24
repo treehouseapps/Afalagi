@@ -1,11 +1,15 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createMedicine, updateMedicine } from "@/services/medicine.service";
 import { medicineSchema } from "@/validators/medicine.schema";
-import { getMedicines } from "@/services/medicine.service";
-import { deleteMedicine } from "@/services/medicine.service";
-import { getAllMedicines } from "@/services/medicine.service";
+import {
+  createMedicine,
+  updateMedicine,
+  getMedicines,
+  deleteMedicine,
+  getAllMedicines,
+  getMedById,
+} from "@/services/medicine.service";
 
 function optionalText(formData: FormData, field: string) {
   const value = formData.get(field);
@@ -58,6 +62,6 @@ export async function getMedicinesForPharmacy() {
 export async function getAllMedicine() {
   return await getAllMedicines();
 }
-export async function getMedicineById() {
-  return;
+export async function getMedicineById(medId: number) {
+  return await getMedById(medId);
 }

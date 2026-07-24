@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -20,17 +20,18 @@ import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
 import { Medicine } from "@/types/medicine";
 import { getMedicineById } from "@/actions/medicine";
+import { useParams } from "next/navigation";
 
-const medicineData = {
-  name: "Paracetamol 500mg",
-  category: "Pain Relief & Fever",
-  description:
-    "Paracetamol is a common painkiller used to treat aches and pain. It can also be used to reduce a high temperature.",
-  dosage:
-    "Adults can take 1 or 2 tablets (500mg) every 4 to 6 hours. Do not take more than 8 tablets in 24 hours.",
-  sideEffects:
-    "Side effects are rare but can include allergic reactions (rash, swelling).",
-};
+// const medicineData = {
+//   name: "Paracetamol 500mg",
+//   category: "Pain Relief & Fever",
+//   description:
+//     "Paracetamol is a common painkiller used to treat aches and pain. It can also be used to reduce a high temperature.",
+//   dosage:
+//     "Adults can take 1 or 2 tablets (500mg) every 4 to 6 hours. Do not take more than 8 tablets in 24 hours.",
+//   sideEffects:
+//     "Side effects are rare but can include allergic reactions (rash, swelling).",
+// };
 
 const availablePharmacies = [
   {
@@ -60,15 +61,25 @@ const availablePharmacies = [
 ];
 
 export default function MedicineDetailPage() {
-  const [medicine, setMedicine] = useState<Medicine[]>([]);
+  const { id } = useParams();
 
-  const getMedicine = async () => {
-    const result = await getMedicineById();
-    // setMedicine(result);
-  };
+  const [medicineData, setMedicineData] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchMedicine = async () => {
+      const result = await getMedicineById(Number(id));
+      setMedicineData(result);
+    };
+
+    if (id) {
+      fetchMedicine();
+    }
+  }, [id]);
 
   const availableCount = availablePharmacies.filter((p) => p.inStock).length;
-
+  if (!medicineData) {
+    return <p>Loading...</p>;
+  }
   return (
     <div className="list-page">
       <Navbar />
@@ -82,9 +93,11 @@ export default function MedicineDetailPage() {
         </div>
 
         <div className="list-header">
-          <span className="category-pill">{medicineData.category}</span>
+          <span className="category-pill">
+            {medicineData[0].medicine.category}
+          </span>
 
-          <h1>{medicineData.name}</h1>
+          <h1>{medicineData[0].medicine.name}</h1>
 
           <div className="search-box">
             <CheckCircle2 size={20} />
@@ -108,7 +121,7 @@ export default function MedicineDetailPage() {
                 <span>Description</span>
               </div>
 
-              <p>{medicineData.description}</p>
+              <p>{medicineData[0].medicine.description}</p>
             </div>
 
             <div className="item-card">
@@ -117,7 +130,7 @@ export default function MedicineDetailPage() {
                 <span>Recommended Dosage</span>
               </div>
 
-              <p>{medicineData.dosage}</p>
+              <p>{medicineData[0].medicine.dosage}</p>
             </div>
 
             <div className="item-card">
@@ -126,7 +139,7 @@ export default function MedicineDetailPage() {
                 <span>Possible Side Effects</span>
               </div>
 
-              <p>{medicineData.sideEffects}</p>
+              <p>{medicineData[0].medicine.sideEffects}</p>
             </div>
           </div>
         </div>
