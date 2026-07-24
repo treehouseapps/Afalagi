@@ -13,6 +13,8 @@ import {
   Activity,
   CheckCircle2,
   Info,
+  Building2,
+  Clock3,
 } from "lucide-react";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
@@ -56,116 +58,148 @@ const availablePharmacies = [
 ];
 
 export default function MedicineDetailPage() {
+  const availableCount = availablePharmacies.filter((p) => p.inStock).length;
+
   return (
     <div className="list-page">
       <Navbar />
+
       <main className="list-main">
         <div className="list-search-panel">
-          {" "}
           <Link href="/medicines" className="back-link">
             <ArrowLeft size={18} />
-            Back to Search Results
+            Back to Medicines
           </Link>
         </div>
 
         <div className="list-header">
-          <p>{medicineData.category}</p>
+          <span className="category-pill">{medicineData.category}</span>
+
           <h1>{medicineData.name}</h1>
 
           <div className="search-box">
-            <Search size={20} />
+            <CheckCircle2 size={20} />
             <span>
-              Available in {availablePharmacies.length} Pharmacies Nearby
+              Available at {availableCount} nearby{" "}
+              {availableCount === 1 ? "pharmacy" : "pharmacies"}
             </span>
           </div>
         </div>
 
-        <div
-          className="list-container single-col"
-          style={{ marginTop: "2px", gap: "1px" }}
-        >
+        <div className="list-container single-col">
           <div className="filter-header">
             <Info size={20} />
-            <h3>About this Medicine</h3>
+            <h2>Medicine Information</h2>
           </div>
 
           <div className="items-grid">
             <div className="item-card">
               <div className="filter-header">
-                <Pill size={20} /> Description
+                <Pill size={20} />
+                <span>Description</span>
               </div>
+
               <p>{medicineData.description}</p>
             </div>
 
             <div className="item-card">
               <div className="filter-header">
-                <Activity size={20} /> Dosage
+                <Activity size={20} />
+                <span>Recommended Dosage</span>
               </div>
+
               <p>{medicineData.dosage}</p>
             </div>
 
             <div className="item-card">
               <div className="filter-header">
-                <AlertCircle size={20} /> Side Effects
+                <AlertCircle size={20} />
+                <span>Possible Side Effects</span>
               </div>
+
               <p>{medicineData.sideEffects}</p>
             </div>
           </div>
         </div>
+
         <br />
         <br />
+
         <div className="list-container single-col">
           <div className="filter-header">
-            <div className="brand-icon">
-              <MapPin size={24} />
-            </div>
-            <h2>Where You Can Buy It</h2>
+            <Building2 size={22} />
+            <h2>Available at Nearby Pharmacies</h2>
           </div>
 
           <div className="items-list">
-            {availablePharmacies.map((pharmacy) => (
-              <div key={pharmacy.id} className="pharmacy-card">
-                <div className="pharmacy-header">
-                  <div>
-                    <h3>{pharmacy.name}</h3>
-                    <p className="info-row">
-                      <MapPin size={14} /> {pharmacy.address}
-                      <strong className="distance">{pharmacy.distance}</strong>
-                    </p>
-                  </div>
-
-                  <div
-                    className={`stock-badge ${pharmacy.inStock ? "in-stock" : "limited"}`}
-                  >
-                    {pharmacy.inStock ? (
-                      <CheckCircle2 size={16} />
-                    ) : (
-                      <AlertCircle size={16} />
-                    )}
-                    {pharmacy.status}
-                  </div>
-                </div>
-
-                <div className="item-footer">
-                  <Link key={pharmacy.id} href={`/pharmacies/${pharmacy.id}`}>
-                    <button className="nav-button ghost">View</button>
-                  </Link>
-                  <button className="nav-button primary">
-                    <Navigation2 size={16} /> Dir
-                  </button>
+            {availablePharmacies.length === 0 ? (
+              <div className="item-card">
+                <div className="info-row">
+                  <AlertCircle size={24} />
+                  <span>
+                    This medicine is currently unavailable at nearby pharmacies.
+                  </span>
                 </div>
               </div>
-            ))}
+            ) : (
+              availablePharmacies.map((pharmacy) => (
+                <div key={pharmacy.id} className="pharmacy-card">
+                  <div className="pharmacy-header">
+                    <div>
+                      <h3>{pharmacy.name}</h3>
+
+                      <div className="info-row">
+                        <MapPin size={15} />
+                        <span>{pharmacy.address}</span>
+                      </div>
+
+                      <div className="info-row">
+                        <Clock3 size={15} />
+                        <span>{pharmacy.distance} away</span>
+                      </div>
+                    </div>
+
+                    <div
+                      className={`stock-badge ${
+                        pharmacy.inStock ? "in-stock" : "limited"
+                      }`}
+                    >
+                      {pharmacy.inStock ? (
+                        <CheckCircle2 size={16} />
+                      ) : (
+                        <AlertCircle size={16} />
+                      )}
+
+                      {pharmacy.status}
+                    </div>
+                  </div>
+
+                  <div className="item-footer">
+                    <Link href={`/pharmacies/${pharmacy.id}`}>
+                      <button className="nav-button ghost">
+                        View Pharmacy
+                      </button>
+                    </Link>
+
+                    <button className="nav-button primary">
+                      <Navigation2 size={16} />
+                      Directions
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
 
             <div className="item-card">
               <div className="info-row">
-                <MapIcon size={32} />
-                <span>View on Map (Coming Soon)</span>
+                <MapIcon size={30} />
+                <span>Interactive Map (Coming Soon)</span>
               </div>
             </div>
           </div>
         </div>
       </main>
+
       <Footer />
     </div>
   );
