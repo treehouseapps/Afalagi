@@ -21,53 +21,32 @@ import Navbar from "@/components/layout/Navbar";
 import { getMedicineById } from "@/actions/medicine";
 import { useParams } from "next/navigation";
 import { getPharmacyList } from "@/actions/pharmacy";
-
-const availablePharmacies = [
-  {
-    id: 1,
-    name: "Health Plus Pharmacy",
-    address: "Bole Road, Near Edna Mall, Addis Ababa",
-    distance: "0.5 km",
-    status: "In Stock",
-    inStock: true,
-  },
-  {
-    id: 2,
-    name: "City Care Pharmacy",
-    address: "Piassa, Churchill Ave, Addis Ababa",
-    distance: "1.2 km",
-    status: "In Stock",
-    inStock: true,
-  },
-  {
-    id: 3,
-    name: "Sunrise Meds",
-    address: "22 Mazoriya, Addis Ababa",
-    distance: "2.8 km",
-    status: "Low Stock",
-    inStock: false,
-  },
-];
+import { InventoryPharmacy } from "@/types/medicine";
 
 export default function MedicineDetailPage() {
   const { id } = useParams();
 
   const [medicineData, setMedicineData] = useState<any>(null);
-
+  const [availablePharmacies, setAvailablePharmacies] = useState<
+    InventoryPharmacy[]
+  >([]);
   useEffect(() => {
     const fetchMedicine = async () => {
-      const result = await getMedicineById(Number(id));
-      const res = await getPharmacyList(Number(id));
-      setMedicineData(result);
-      console.log(res);
+      if (!id) return;
+
+      const [medicineRes, pharmacyRes] = await Promise.all([
+        getMedicineById(Number(id)),
+        getPharmacyList(Number(id)),
+      ]);
+
+      setMedicineData(medicineRes);
+      setAvailablePharmacies(pharmacyRes.pharmacy || []);
     };
 
-    if (id) {
-      fetchMedicine();
-    }
+    fetchMedicine();
   }, [id]);
 
-  const availableCount = availablePharmacies.filter((p) => p.inStock).length;
+  // const availableCount = availablePharmacies.filter((p) => p.inStock).length;
   if (!medicineData) {
     return <p>Loading...</p>;
   }
@@ -93,8 +72,8 @@ export default function MedicineDetailPage() {
           <div className="search-box">
             <CheckCircle2 size={20} />
             <span>
-              Available at {availableCount} nearby{" "}
-              {availableCount === 1 ? "pharmacy" : "pharmacies"}
+              {/* Available at {availableCount} nearby{" "}
+              {availableCount === 1 ? "pharmacy" : "pharmacies"} */}
             </span>
           </div>
         </div>
@@ -155,24 +134,24 @@ export default function MedicineDetailPage() {
                 </div>
               </div>
             ) : (
-              availablePharmacies.map((pharmacy) => (
-                <div key={pharmacy.id} className="pharmacy-card">
+              availablePharmacies.map((pharmac) => (
+                <div key={pharmac.pharmacy.id} className="pharmacy-card">
                   <div className="pharmacy-header">
                     <div>
-                      <h3>{pharmacy.name}</h3>
+                      <h3>{pharmac.pharmacy.name}</h3>
 
                       <div className="info-row">
                         <MapPin size={15} />
-                        <span>{pharmacy.address}</span>
+                        <span>{pharmac.pharmacy.address}</span>
                       </div>
 
                       <div className="info-row">
                         <Clock3 size={15} />
-                        <span>{pharmacy.distance} away</span>
+                        <span>{pharmac.pharmacy.distance} away</span>
                       </div>
                     </div>
 
-                    <div
+                    {/* <div
                       className={`stock-badge ${
                         pharmacy.inStock ? "in-stock" : "limited"
                       }`}
@@ -184,11 +163,11 @@ export default function MedicineDetailPage() {
                       )}
 
                       {pharmacy.status}
-                    </div>
+                    </div> */}
                   </div>
 
                   <div className="item-footer">
-                    <Link href={`/pharmacies/${pharmacy.id}`}>
+                    <Link href={`/pharmacies/${pharmac.pharmacy.id}`}>
                       <button className="nav-button ghost">
                         View Pharmacy
                       </button>

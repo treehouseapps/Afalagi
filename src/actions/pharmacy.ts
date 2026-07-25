@@ -206,5 +206,5 @@ export async function getMyInventory() {
 }
 
 export async function getPharmacyList(pharmId: number) {
-  return await getPharmacyById();
+  return await getPharmacyById(Number(pharmId));
 }

@@ -41,11 +41,17 @@ export type UpdateMedicineInput = {
   price?: number;
 };
 
-export type InverntoryPharmacy = {
+export type Pharmacy = {
+  id: number;
+  name: string;
+  address: string;
+  distance?: string;
+};
+
+export type InventoryPharmacy = {
   pharmacyId: number;
   medicineId: number;
-  pharmacy: string;
-  medicine: string;
   quantity: number;
-  price: number;
+  price: number | null;
+  pharmacy: Pharmacy;
 };

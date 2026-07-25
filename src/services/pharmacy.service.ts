@@ -108,10 +108,10 @@ export async function updatePharmacyProfile(data: {
 
   return { ok: true };
 }
-export async function getPharmacyById() {
-  const pharmacy = prisma.inventory.findMany({
+export async function getPharmacyById(pharmId: number) {
+  const pharmacy = await prisma.inventory.findMany({
     where: {
-      medicineId: Number(1),
+      medicineId: Number(pharmId),
     },
     include: {
       pharmacy: true,
