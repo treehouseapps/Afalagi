@@ -18,20 +18,9 @@ import {
 } from "lucide-react";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
-import { Medicine } from "@/types/medicine";
 import { getMedicineById } from "@/actions/medicine";
 import { useParams } from "next/navigation";
-
-// const medicineData = {
-//   name: "Paracetamol 500mg",
-//   category: "Pain Relief & Fever",
-//   description:
-//     "Paracetamol is a common painkiller used to treat aches and pain. It can also be used to reduce a high temperature.",
-//   dosage:
-//     "Adults can take 1 or 2 tablets (500mg) every 4 to 6 hours. Do not take more than 8 tablets in 24 hours.",
-//   sideEffects:
-//     "Side effects are rare but can include allergic reactions (rash, swelling).",
-// };
+import { getPharmacyList } from "@/actions/pharmacy";
 
 const availablePharmacies = [
   {
@@ -68,7 +57,9 @@ export default function MedicineDetailPage() {
   useEffect(() => {
     const fetchMedicine = async () => {
       const result = await getMedicineById(Number(id));
+      const res = await getPharmacyList(Number(id));
       setMedicineData(result);
+      console.log(res);
     };
 
     if (id) {

@@ -10,6 +10,7 @@ import {
   getPharmacyDashboardData,
   getPharmacyProfile,
   updatePharmacyProfile,
+  getPharmacyById,
 } from "@/services/pharmacy.service";
 
 export async function CreatePharmacy(
@@ -202,4 +203,8 @@ export async function getMyInventory() {
       expiryDate: item.expiryDate,
     })),
   };
+}
+
+export async function getPharmacyList(pharmId: number) {
+  return await getPharmacyById();
 }

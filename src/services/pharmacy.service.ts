@@ -108,3 +108,20 @@ export async function updatePharmacyProfile(data: {
 
   return { ok: true };
 }
+export async function getPharmacyById() {
+  const pharmacy = prisma.inventory.findMany({
+    where: {
+      medicineId: Number(1),
+    },
+    include: {
+      pharmacy: true,
+    },
+  });
+  if (!pharmacy) {
+    throw new Error("Pharmacy not found");
+  }
+  console.log(pharmacy);
+  return {
+    pharmacy,
+  };
+}

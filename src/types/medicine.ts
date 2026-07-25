@@ -1,3 +1,5 @@
+import { number, string } from "zod/v4";
+
 export interface Medicine {
   id: number;
   name: string;
@@ -37,4 +39,13 @@ export type UpdateMedicineInput = {
   category: string;
   manufacturer?: string;
   price?: number;
+};
+
+export type InverntoryPharmacy = {
+  pharmacyId: number;
+  medicineId: number;
+  pharmacy: string;
+  medicine: string;
+  quantity: number;
+  price: number;
 };
