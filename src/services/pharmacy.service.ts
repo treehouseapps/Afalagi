@@ -120,8 +120,30 @@ export async function getPharmacyById(pharmId: number) {
   if (!pharmacy) {
     throw new Error("Pharmacy not found");
   }
-  console.log(pharmacy);
+
   return {
     pharmacy,
   };
+}
+export async function getAllPharmacy() {
+  const pharmacyList = await prisma.pharmacy.findMany();
+
+  if (!pharmacyList) {
+    throw new Error("Pharmacy not found");
+  }
+
+  return pharmacyList;
+}
+export async function getPharmacyResult(pharmId: number) {
+  const pharmacy = await prisma.pharmacy.findFirst({
+    where: {
+      id: pharmId,
+    },
+  });
+
+  if (!pharmacy) {
+    throw new Error("Pharmacy not found");
+  }
+
+  return pharmacy;
 }

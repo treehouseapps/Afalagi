@@ -4,9 +4,9 @@ export interface Pharmacy {
   name: string;
   address: string;
   city: string;
-  phone?: string;
-  latitude?: number;
-  longitude?: number;
+  phone: string | null;
+  latitude: number | null;
+  longitude: number | null;
   approved: boolean;
 }
 export type Profile = {

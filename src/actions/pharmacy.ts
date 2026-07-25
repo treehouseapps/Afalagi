@@ -11,6 +11,8 @@ import {
   getPharmacyProfile,
   updatePharmacyProfile,
   getPharmacyById,
+  getAllPharmacy,
+  getPharmacyResult,
 } from "@/services/pharmacy.service";
 
 export async function CreatePharmacy(
@@ -207,4 +209,10 @@ export async function getMyInventory() {
 
 export async function getPharmacyList(pharmId: number) {
   return await getPharmacyById(Number(pharmId));
+}
+export async function getPharmacy() {
+  return await getAllPharmacy();
+}
+export async function getPharmacyId(pharmId: number) {
+  return await getPharmacyResult(Number(pharmId));
 }

@@ -149,20 +149,6 @@ export default function MedicineDetailPage() {
                         <span>{pharmac.pharmacy.distance} away</span>
                       </div>
                     </div>
-
-                    {/* <div
-                      className={`stock-badge ${
-                        pharmacy.inStock ? "in-stock" : "limited"
-                      }`}
-                    >
-                      {pharmacy.inStock ? (
-                        <CheckCircle2 size={16} />
-                      ) : (
-                        <AlertCircle size={16} />
-                      )}
-
-                      {pharmacy.status}
-                    </div> */}
                   </div>
 
                   <div className="item-footer">
