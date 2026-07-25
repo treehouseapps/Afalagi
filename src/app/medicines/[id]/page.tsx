@@ -46,7 +46,6 @@ export default function MedicineDetailPage() {
     fetchMedicine();
   }, [id]);
 
-  // const availableCount = availablePharmacies.filter((p) => p.inStock).length;
   if (!medicineData) {
     return <p>Loading...</p>;
   }
