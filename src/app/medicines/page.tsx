@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Search, MapPin, Star, Filter } from "lucide-react";
+import { Search, MapPin, Filter } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useSearchParams } from "next/navigation";
