@@ -26,6 +26,8 @@ export default function AddMedicinePage() {
 
     if (result.success) {
       window.alert(result.message);
+    } else {
+      window.alert(result.message);
     }
   }
 
