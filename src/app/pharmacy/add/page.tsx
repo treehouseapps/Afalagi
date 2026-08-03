@@ -22,7 +22,11 @@ export default function AddMedicinePage() {
   }, []);
 
   async function handleAdd(medicineId: number) {
-    await addMedicineToPharmacy(medicineId);
+    const result = await addMedicineToPharmacy(medicineId);
+
+    if (result.success) {
+      window.alert(result.message);
+    }
   }
 
   return (

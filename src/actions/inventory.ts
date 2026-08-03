@@ -55,7 +55,7 @@ export async function addMedicineToPharmacy(medicineId: number) {
 
   const userId = result.payload.id;
 
-  await addMedicineToPharm(medicineId, Number(userId));
+  return await addMedicineToPharm(medicineId, Number(userId));
 
   revalidatePath("/pharmacy/medicines");
 }
