@@ -159,8 +159,6 @@ export default function AdminMedicinePage() {
 
                 <th>Manufacturer</th>
 
-                <th>Price</th>
-
                 <th>Actions</th>
               </tr>
             </thead>

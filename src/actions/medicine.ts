@@ -25,7 +25,6 @@ function getMedicineInput(formData: FormData) {
     genericName: optionalText(formData, "genericName"),
     category: optionalText(formData, "category"),
     manufacturer: optionalText(formData, "manufacturer"),
-    price: priceValue === undefined ? undefined : Number(priceValue),
   });
 }
 
