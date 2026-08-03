@@ -47,9 +47,14 @@ export async function deleteMedicine(id: number): Promise<Medicine> {
 }
 
 export async function getAllMedicines() {
-  return await prisma.medicine.findMany({
-    orderBy: {
-      name: "asc",
+  return await prisma.inventory.findMany({
+    where: {
+      quantity: {
+        gt: 0,
+      },
+    },
+    include: {
+      medicine: true,
     },
   });
 }

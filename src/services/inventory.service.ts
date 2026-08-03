@@ -75,13 +75,14 @@ export async function addMedicineToPharm(medicineId: number, userId: number) {
     };
   }
 
-  await prisma.inventory.create({
+  const created = await prisma.inventory.create({
     data: {
       pharmacyId: pharmacy.id,
       medicineId,
       quantity: 0,
     },
   });
+  console.log(created);
 
   return {
     success: true,

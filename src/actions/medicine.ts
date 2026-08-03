@@ -59,7 +59,16 @@ export async function getMedicinesForPharmacy() {
   return await getAllMedicines();
 }
 export async function getAllMedicine() {
-  return await getAllMedicines();
+  const inventory = await getAllMedicines();
+
+  return inventory.map((item) => ({
+    id: item.id,
+    name: item.medicine.name,
+    describtion: item.medicine.description,
+    category: item.medicine.category,
+    genericName: item.medicine.genericName,
+    manufacturer: item.medicine.manufacturer,
+  }));
 }
 export async function getMedicineById(medId: number) {
   return await getMedById(medId);
