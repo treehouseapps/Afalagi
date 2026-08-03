@@ -12,6 +12,7 @@ export interface Medicine {
 
 export type InventoryMedicine = {
   id: number;
+  medicineId?: number;
   name: string;
   description?: string | null;
   genericName?: string | null;

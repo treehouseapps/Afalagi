@@ -63,6 +63,7 @@ export async function getAllMedicine() {
 
   return inventory.map((item) => ({
     id: item.id,
+    medicineId: item.medicine.id,
     name: item.medicine.name,
     describtion: item.medicine.description,
     category: item.medicine.category,

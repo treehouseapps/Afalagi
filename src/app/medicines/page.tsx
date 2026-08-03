@@ -111,7 +111,10 @@ export default function MedicinesPage() {
                   </div>
 
                   <div className="item-footer">
-                    <Link href={`/medicines/${med.id}`} className="item-link">
+                    <Link
+                      href={`/medicines/${med.medicineId}`}
+                      className="item-link"
+                    >
                       View Details
                     </Link>
                   </div>

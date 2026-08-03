@@ -82,7 +82,6 @@ export async function addMedicineToPharm(medicineId: number, userId: number) {
       quantity: 0,
     },
   });
-  console.log(created);
 
   return {
     success: true,
