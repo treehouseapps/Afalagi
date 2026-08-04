@@ -105,17 +105,25 @@ export default function ViewModal({ open, onClose, pharmacy }: ViewModalProps) {
 
             <div>
               <label style={labelStyle}>Phone Number</label>
-              <input value={pharmacy.phone} readOnly style={inputStyle} />
+              <input value={pharmacy.phone ?? ""} readOnly style={inputStyle} />
             </div>
 
             <div>
               <label style={labelStyle}>Latitude</label>
-              <input value={pharmacy.latitude} readOnly style={inputStyle} />
+              <input
+                value={pharmacy.latitude ?? ""}
+                readOnly
+                style={inputStyle}
+              />
             </div>
 
             <div>
               <label style={labelStyle}>Longitude</label>
-              <input value={pharmacy.longitude} readOnly style={inputStyle} />
+              <input
+                value={pharmacy.longitude ?? ""}
+                readOnly
+                style={inputStyle}
+              />
             </div>
 
             <div>
