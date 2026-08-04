@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   ArrowLeft,
   MapPin,
-  Search,
   AlertCircle,
   Pill,
   Navigation2,

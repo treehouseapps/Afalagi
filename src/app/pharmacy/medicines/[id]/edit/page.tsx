@@ -1,6 +1,8 @@
 import { getInventoryMedicine } from "@/actions/inventory";
 import EditInventoryForm from "./EditInventoryForm";
 
+export const dynamic = "force-dynamic";
+
 type Props = {
   params: {
     id: string;
