@@ -17,9 +17,7 @@ import {
 import { getPharmacy } from "@/actions/pharmacy";
 import { Pharmacy } from "@/types/pharmacy";
 
-export const dynamic = "force-dynamic";
-
-export default function PharmaciesPage() {
+export default function PharmaciesContent() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("distance");
   const [pharmacies, setPharmacies] = useState<Pharmacy[]>([]);
