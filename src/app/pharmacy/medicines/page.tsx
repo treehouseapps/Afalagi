@@ -103,10 +103,6 @@ export default function MedicinesPage() {
 
                     <td>{medicine.manufacturer || "-"}</td>
 
-                    <td>{medicine.quantity}</td>
-
-                    <td>{medicine.price ? `${medicine.price} ETB` : "-"}</td>
-
                     <td>
                       {medicine.expiryDate
                         ? new Date(medicine.expiryDate).toLocaleDateString()
