@@ -12,6 +12,8 @@ import styles from "./pharmacy.module.css";
 
 import { getPharmacyDashboard } from "@/actions/pharmacy";
 
+export const dynamic = "force-dynamic";
+
 export default async function PharmacyDashboardPage() {
   const data = await getPharmacyDashboard();
 

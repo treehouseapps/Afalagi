@@ -9,6 +9,8 @@ import { useSearchParams } from "next/navigation";
 import { getAllMedicine } from "@/actions/medicine";
 import { InventoryMedicine as medicineType } from "@/types/medicine";
 
+export const dynamic = "force-dynamic";
+
 export default function MedicinesPage() {
   const [medicines, setMedicines] = useState<medicineType[]>([]);
   const getmed = async () => {

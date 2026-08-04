@@ -12,6 +12,8 @@ import styles from "../pharmacy.module.css";
 
 type Medicine = MedicineType;
 
+export const dynamic = "force-dynamic";
+
 export default function MedicinesPage() {
   const [medicines, setMedicines] = useState<Medicine[]>([]);
   const [loading, setLoading] = useState(true);

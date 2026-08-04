@@ -8,6 +8,8 @@ import { getMedicine } from "@/actions/medicine";
 import { deleteMedicineAction } from "@/actions/medicine";
 type Medicine = MedicineType;
 
+export const dynamic = "force-dynamic";
+
 export default function AdminMedicinePage() {
   const [openAddModal, setOpenAddModal] = useState(false);
   const [editOpen, setEditOpen] = useState(false);

@@ -8,6 +8,8 @@ import { getMyPharmacyProfile, updateMyProfile } from "@/actions/pharmacy";
 
 type Profile = ProfileType;
 
+export const dynamic = "force-dynamic";
+
 export default function ProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [draft, setDraft] = useState<Profile | null>(null);

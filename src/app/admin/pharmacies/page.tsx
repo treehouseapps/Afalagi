@@ -4,6 +4,8 @@ import ViewModal from "./viewModal";
 import { useState } from "react";
 import { Pharmacy as PharmacyType } from "@/types/pharmacy";
 
+export const dynamic = "force-dynamic";
+
 export default function AdminPharmaciesPage() {
   const [viewOpen, setViewOpen] = useState(false);
 

@@ -17,6 +17,8 @@ import {
 import { getPharmacy } from "@/actions/pharmacy";
 import { Pharmacy } from "@/types/pharmacy";
 
+export const dynamic = "force-dynamic";
+
 export default function PharmaciesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("distance");

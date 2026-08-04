@@ -4,6 +4,8 @@ import Link from "next/link";
 import { logout } from "@/actions/auth";
 import { useRouter } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 export default function AdminDashboardPage() {
   const router = useRouter();
 
