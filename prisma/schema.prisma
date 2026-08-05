@@ -51,6 +51,8 @@ model Medicine {
   name        String
   genericName String?
   description String?
+  dosage      String?
+  sideEffect  String?
   category    String
   manufacturer String?
   inventory Inventory[]

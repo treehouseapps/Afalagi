@@ -20,7 +20,6 @@ import Navbar from "@/components/layout/Navbar";
 import { getMedicineById } from "@/actions/medicine";
 import { useParams } from "next/navigation";
 import { getPharmacyList } from "@/actions/pharmacy";
-import { InventoryPharmacy } from "@/types/medicine";
 import { PharmacyListItem } from "@/types/pharmacy";
 import PharmacyList from "@/components/pharmacy/PharmacyList";
 export default function MedicineDetailPage() {
@@ -57,7 +56,7 @@ export default function MedicineDetailPage() {
 
     fetchMedicine();
   }, [id]);
-
+  console.log(medicineData[0].medicine);
   if (!medicineData) {
     return <p>Loading...</p>;
   }
@@ -116,7 +115,7 @@ export default function MedicineDetailPage() {
                 <span>Possible Side Effects</span>
               </div>
 
-              <p>{medicineData[0].medicine.sideEffects}</p>
+              <p>{medicineData[0].medicine.sideEffect}</p>
             </div>
           </div>
         </div>
