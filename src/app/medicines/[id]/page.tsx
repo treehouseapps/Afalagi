@@ -56,7 +56,9 @@ export default function MedicineDetailPage() {
 
     fetchMedicine();
   }, [id]);
-  console.log(medicineData[0].medicine);
+
+  console.log(medicineData);
+
   if (!medicineData) {
     return <p>Loading...</p>;
   }

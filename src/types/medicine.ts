@@ -7,6 +7,7 @@ export interface Medicine {
   genericName?: string | null;
   manufacturer?: string | null;
   category: string;
+  sideEffect: string;
   expiryDate?: Date | string | null;
 }
 
