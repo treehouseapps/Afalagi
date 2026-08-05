@@ -21,13 +21,14 @@ import { getMedicineById } from "@/actions/medicine";
 import { useParams } from "next/navigation";
 import { getPharmacyList } from "@/actions/pharmacy";
 import { InventoryPharmacy } from "@/types/medicine";
-
+import { PharmacyListItem } from "@/types/pharmacy";
+import PharmacyList from "@/components/pharmacy/PharmacyList";
 export default function MedicineDetailPage() {
   const { id } = useParams();
 
   const [medicineData, setMedicineData] = useState<any>(null);
   const [availablePharmacies, setAvailablePharmacies] = useState<
-    InventoryPharmacy[]
+    PharmacyListItem[]
   >([]);
   useEffect(() => {
     const fetchMedicine = async () => {
@@ -39,7 +40,19 @@ export default function MedicineDetailPage() {
       ]);
 
       setMedicineData(medicineRes);
-      setAvailablePharmacies(pharmacyRes.pharmacy || []);
+      setAvailablePharmacies(
+        (pharmacyRes.pharmacy || []).map((inventoryItem: any) => ({
+          id: inventoryItem.pharmacy.id,
+          name: inventoryItem.pharmacy.name,
+          address: inventoryItem.pharmacy.address,
+          city: inventoryItem.pharmacy.city,
+          phone: inventoryItem.pharmacy.phone,
+          latitude: inventoryItem.pharmacy.latitude,
+          longitude: inventoryItem.pharmacy.longitude,
+          approved: inventoryItem.pharmacy.approved,
+          distance: inventoryItem.pharmacy.distance,
+        })),
+      );
     };
 
     fetchMedicine();
@@ -69,10 +82,6 @@ export default function MedicineDetailPage() {
 
           <div className="search-box">
             <CheckCircle2 size={20} />
-            <span>
-              {/* Available at {availableCount} nearby{" "}
-              {availableCount === 1 ? "pharmacy" : "pharmacies"} */}
-            </span>
           </div>
         </div>
 
@@ -115,7 +124,7 @@ export default function MedicineDetailPage() {
         <br />
         <br />
 
-        <div className="list-container single-col">
+        {/* <div className="list-container single-col">
           <div className="filter-header">
             <Building2 size={22} />
             <h2>Available at Nearby Pharmacies</h2>
@@ -173,7 +182,9 @@ export default function MedicineDetailPage() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
+
+        <PharmacyList Pharmacies={availablePharmacies} />
       </main>
 
       <Footer />
