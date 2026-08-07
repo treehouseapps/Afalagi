@@ -2,7 +2,7 @@
 
 import ViewModal from "./viewModal";
 import { useEffect, useState } from "react";
-import { PharmacyListItem } from "@/types/pharmacy";
+import { Pharmacy as PharmacyType } from "@/types/pharmacy";
 import { getPharmacy } from "@/actions/pharmacy";
 
 export const dynamic = "force-dynamic";
@@ -10,63 +10,29 @@ export const dynamic = "force-dynamic";
 export default function AdminPharmaciesPage() {
   const [viewOpen, setViewOpen] = useState(false);
 
-  type Pharmacy = PharmacyListItem;
+  type Pharmacy = PharmacyType;
   const [selectedPharmacy, setSelectedPharmacy] = useState<Pharmacy | null>(
     null,
   );
-  const [pharmacies, setPharmacies] = useState<Pharmacy[]>([]);
-  const [pendingPharm, setPendingPharm] = useState<Pharmacy[]>([]);
+  const [allPharmacies, setAllPharmacies] = useState<Pharmacy[]>([]);
+  const [approvedPharmacies, setApproved] = useState<Pharmacy[]>([]);
+  const [pendingApprovals, setPending] = useState<Pharmacy[]>([]);
 
-  const pendingApprovals = [
-    {
-      name: "Green Care Pharmacy",
-      location: "Ikeja",
-      request: "New registration",
-    },
-    {
-      name: "HealthPlus Pharmacy",
-      location: "Yaba",
-      request: "License renewal",
-    },
-    {
-      name: "Sunrise Pharmacy",
-      location: "Surulere",
-      request: "Profile update",
-    },
-  ];
-
-  const approvedPharmacies: Pharmacy[] = [
-    {
-      id: 1,
-      ownerId: 5,
-      name: "MediTrust Pharmacy",
-      address: "12 Main Street",
-      city: "Victoria Island",
-      phone: "0911223344",
-      latitude: 9.02,
-      longitude: 38.74,
-      approved: true,
-    },
-    {
-      id: 2,
-      ownerId: 6,
-      name: "LifeCare Pharmacy",
-      address: "Bole Road",
-      city: "Addis Ababa",
-      phone: "0922334455",
-      latitude: 9.01,
-      longitude: 38.76,
-      approved: true,
-    },
-  ];
   useEffect(() => {
     const getList = async () => {
-      const result = await getPharmacy();
-      setPharmacies(result);
+      const results = await getPharmacy();
+      setAllPharmacies(results);
+
+      const approved = results.filter((pharmacies) => {
+        return pharmacies.approved == true;
+      });
+      setApproved(approved);
+      const pending = results.filter((pharmacies) => {
+        return pharmacies.approved == false;
+      });
+      setPending(pending);
     };
     getList();
-
-    // const pendingPharm = pharmacies.filte();
   }, []);
 
   return (
@@ -114,10 +80,7 @@ export default function AdminPharmaciesPage() {
                   <div>
                     <p style={{ margin: 0, fontWeight: 700 }}>{item.name}</p>
                     <p style={{ margin: "0.25rem 0 0", color: "#666" }}>
-                      {item.location}
-                    </p>
-                    <p style={{ margin: "0.25rem 0 0", color: "#666" }}>
-                      {item.request}
+                      {item.address}
                     </p>
                   </div>
                   <div style={{ display: "flex", gap: "0.75rem" }}>
