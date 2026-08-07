@@ -1,18 +1,21 @@
 "use client";
 
 import ViewModal from "./viewModal";
-import { useState } from "react";
-import { Pharmacy as PharmacyType } from "@/types/pharmacy";
+import { useEffect, useState } from "react";
+import { PharmacyListItem } from "@/types/pharmacy";
+import { getPharmacy } from "@/actions/pharmacy";
 
 export const dynamic = "force-dynamic";
 
 export default function AdminPharmaciesPage() {
   const [viewOpen, setViewOpen] = useState(false);
 
-  type Pharmacy = PharmacyType;
+  type Pharmacy = PharmacyListItem;
   const [selectedPharmacy, setSelectedPharmacy] = useState<Pharmacy | null>(
     null,
   );
+  const [pharmacies, setPharmacies] = useState<Pharmacy[]>([]);
+  const [pendingPharm, setPendingPharm] = useState<Pharmacy[]>([]);
 
   const pendingApprovals = [
     {
@@ -56,6 +59,15 @@ export default function AdminPharmaciesPage() {
       approved: true,
     },
   ];
+  useEffect(() => {
+    const getList = async () => {
+      const result = await getPharmacy();
+      setPharmacies(result);
+    };
+    getList();
+
+    // const pendingPharm = pharmacies.filte();
+  }, []);
 
   return (
     <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>

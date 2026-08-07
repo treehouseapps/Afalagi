@@ -7,7 +7,8 @@ export interface Medicine {
   genericName?: string | null;
   manufacturer?: string | null;
   category: string;
-  sideEffect: string;
+  dosage?: string;
+  sideEffect?: string;
   expiryDate?: Date | string | null;
 }
 
@@ -19,6 +20,8 @@ export type InventoryMedicine = {
   genericName?: string | null;
   manufacturer?: string | null;
   category: string;
+  dosage: string | null;
+  sideEffect: string | null;
   price?: number | null;
   expiryDate?: Date | string | null;
 };
@@ -28,6 +31,8 @@ export type CreateMedicineInput = {
   genericName?: string;
   description?: string;
   category: string;
+  dosage: string | null;
+  sideEffect: string | null;
   manufacturer?: string;
 };
 
@@ -36,6 +41,8 @@ export type UpdateMedicineInput = {
   genericName?: string;
   description?: string;
   category: string;
+  dosage: string | null;
+  sideEffect: string | null;
   manufacturer?: string;
 };
 
