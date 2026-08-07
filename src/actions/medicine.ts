@@ -17,13 +17,13 @@ function optionalText(formData: FormData, field: string) {
 }
 
 function getMedicineInput(formData: FormData) {
-  const priceValue = optionalText(formData, "price");
-
   return medicineSchema.parse({
     name: optionalText(formData, "name"),
     description: optionalText(formData, "description"),
     genericName: optionalText(formData, "genericName"),
     category: optionalText(formData, "category"),
+    dosage: optionalText(formData, "dosage"),
+    sideEffect: optionalText(formData, "sideEffect"),
     manufacturer: optionalText(formData, "manufacturer"),
   });
 }

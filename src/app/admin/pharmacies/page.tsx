@@ -35,6 +35,9 @@ export default function AdminPharmaciesPage() {
     getList();
   }, []);
 
+  const Approve = async () => {};
+
+  const Reject = () => {};
   return (
     <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
       <h1>Admin Pharmacy Approvals</h1>
@@ -84,10 +87,18 @@ export default function AdminPharmaciesPage() {
                     </p>
                   </div>
                   <div style={{ display: "flex", gap: "0.75rem" }}>
-                    <button type="button" style={{ padding: "0.75rem 1rem" }}>
+                    <button
+                      onClick={Approve}
+                      type="button"
+                      style={{ padding: "0.75rem 1rem" }}
+                    >
                       Approve
                     </button>
-                    <button type="button" style={{ padding: "0.75rem 1rem" }}>
+                    <button
+                      onClick={Reject}
+                      type="button"
+                      style={{ padding: "0.75rem 1rem" }}
+                    >
                       Reject
                     </button>
                   </div>

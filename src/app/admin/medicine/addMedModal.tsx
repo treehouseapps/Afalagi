@@ -129,7 +129,28 @@ export default function AddMedicineModal({
                 style={inputStyle}
               />
             </div>
+            <div>
+              <label style={labelStyle}>Dosage</label>
 
+              <input
+                type="text"
+                name="dosage"
+                required
+                placeholder="Analgesic"
+                style={inputStyle}
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>Side Effect</label>
+
+              <input
+                type="text"
+                name="sideEffect"
+                required
+                placeholder="Analgesic"
+                style={inputStyle}
+              />
+            </div>
             <div>
               <label style={labelStyle}>Manufacturer</label>
 

@@ -6,5 +6,7 @@ export const medicineSchema = z.object({
   description: z.string().optional(),
   category: z.string().trim().min(1),
   manufacturer: z.string().optional(),
+  dosage: z.string().trim().min(2),
+  sideEffect: z.string().trim().min(2),
   price: z.number().nonnegative().optional(),
 });
