@@ -1,51 +1,33 @@
 import Link from "next/link";
+import { prisma } from "@/lib/prisma";
+import { approvePharmacyAction } from "@/actions/pharmacy";
 
-export default function AdminPharmacyVerificationPage() {
-  const Pharmacy = [
-    {
-      id: 1,
-      name: "MediTrust Pharmacy",
-      city: "Addis Ababa",
-      location: "Addis Ababa",
-      status: "Approved",
-      documents: ["Digital ID", "Pharmacy License", "Trade License"],
-    },
-    {
-      id: 2,
-      name: "LifeCare Pharmacy",
-      city: "Hawassa",
-      location: "Hawassa",
-      status: "Approved",
-      documents: ["Digital ID", "Pharmacy License", "Trade License"],
-    },
-  ];
-  const VerifiedPharmacy = Pharmacy.filter(
-    (pharmacy) => pharmacy.status === "Approved",
-  );
+export const dynamic = "force-dynamic";
+
+export default async function AdminPharmacyVerificationPage() {
+  const pendingPharmacies = await prisma.pharmacy.findMany({
+    where: { approved: false },
+    orderBy: { createdAt: "desc" },
+    include: { owner: true },
+  });
+
+  const approvedPharmacies = await prisma.pharmacy.findMany({
+    where: { approved: true },
+    orderBy: { createdAt: "desc" },
+    include: { owner: true },
+  });
+
   return (
     <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
       <h1>Pharmacy Verification</h1>
 
-      <p
-        style={{
-          maxWidth: "720px",
-          marginTop: "0.5rem",
-          color: "#555",
-        }}
-      >
-        Review pharmacy documents and verify trusted pharmacies that meet
-        Afalagi requirements.
+      <p style={{ maxWidth: "720px", marginTop: "0.5rem", color: "#555" }}>
+        Review pending pharmacy requests and approve them from the database.
       </p>
 
       <section
-        style={{
-          marginTop: "1.75rem",
-          display: "grid",
-          gap: "1.25rem",
-        }}
+        style={{ marginTop: "1.75rem", display: "grid", gap: "1.25rem" }}
       >
-        {/* Pending Verification */}
-
         <div
           style={{
             padding: "1.5rem",
@@ -55,115 +37,73 @@ export default function AdminPharmacyVerificationPage() {
         >
           <h2>Pending Verification Requests</h2>
 
-          <p
-            style={{
-              marginTop: "0.5rem",
-              color: "#666",
-            }}
-          >
-            Check pharmacy licenses and documents before giving the verified
-            badge.
+          <p style={{ marginTop: "0.5rem", color: "#666" }}>
+            These pharmacies are still waiting for approval.
           </p>
 
-          <div
-            style={{
-              marginTop: "1rem",
-              display: "grid",
-              gap: "1rem",
-            }}
-          >
-            {Pharmacy.map((pharmacy) => (
-              <div
-                key={pharmacy.name}
-                style={{
-                  padding: "1rem",
-                  border: "1px solid #eee",
-                  borderRadius: "14px",
-                  background: "#fafafa",
-                }}
-              >
+          <div style={{ marginTop: "1rem", display: "grid", gap: "1rem" }}>
+            {pendingPharmacies.length === 0 ? (
+              <p style={{ color: "#666" }}>No pending pharmacies.</p>
+            ) : (
+              pendingPharmacies.map((pharmacy) => (
                 <div
+                  key={pharmacy.id}
                   style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    gap: "1rem",
-                    alignItems: "center",
+                    padding: "1rem",
+                    border: "1px solid #eee",
+                    borderRadius: "14px",
+                    background: "#fafafa",
                   }}
                 >
-                  <div>
-                    <p
-                      style={{
-                        margin: 0,
-                        fontWeight: 700,
-                      }}
-                    >
-                      {pharmacy.name}
-                    </p>
-
-                    <p
-                      style={{
-                        margin: "0.25rem 0",
-                        color: "#666",
-                      }}
-                    >
-                      {pharmacy.city}
-                    </p>
-
-                    <p
-                      style={{
-                        margin: "0.25rem 0",
-                        color: "#666",
-                      }}
-                    >
-                      Documents:
-                    </p>
-
-                    {pharmacy.documents.map((doc) => (
-                      <span
-                        key={doc}
-                        style={{
-                          display: "block",
-                          color: "#555",
-                        }}
-                      >
-                        ✓ {doc}
-                      </span>
-                    ))}
-                  </div>
-
                   <div
                     style={{
                       display: "flex",
-                      gap: "0.75rem",
+                      justifyContent: "space-between",
+                      gap: "1rem",
+                      alignItems: "center",
                     }}
                   >
-                    <Link href={`/admin/verify/${pharmacy.id}`}>
-                      <button
-                        type="button"
-                        style={{
-                          padding: "0.75rem 1rem",
-                        }}
-                      >
-                        View Documents
-                      </button>
-                    </Link>
+                    <div>
+                      <p style={{ margin: 0, fontWeight: 700 }}>
+                        {pharmacy.name}
+                      </p>
+                      <p style={{ margin: "0.25rem 0", color: "#666" }}>
+                        {pharmacy.city}
+                      </p>
+                      <p style={{ margin: "0.25rem 0", color: "#666" }}>
+                        {pharmacy.address}
+                      </p>
+                      <p style={{ margin: "0.25rem 0", color: "#666" }}>
+                        {pharmacy.owner.email}
+                      </p>
+                    </div>
 
-                    <button
-                      type="button"
-                      style={{
-                        padding: "0.75rem 1rem",
-                      }}
-                    >
-                      Verify
-                    </button>
+                    <div style={{ display: "flex", gap: "0.75rem" }}>
+                      <Link href={`/admin/verify/${pharmacy.id}`}>
+                        <button
+                          type="button"
+                          style={{ padding: "0.75rem 1rem" }}
+                        >
+                          View
+                        </button>
+                      </Link>
+
+                      <form action={approvePharmacyAction}>
+                        <input type="hidden" name="id" value={pharmacy.id} />
+                        <button
+                          type="submit"
+                          style={{ padding: "0.75rem 1rem" }}
+                        >
+                          Approve
+                        </button>
+                      </form>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
-
-        {/* Verified Pharmacies */}
 
         <div
           style={{
@@ -172,30 +112,14 @@ export default function AdminPharmacyVerificationPage() {
             borderRadius: "18px",
           }}
         >
-          <h2>Verified Pharmacies</h2>
+          <h2>Approved Pharmacies</h2>
 
-          <p
-            style={{
-              marginTop: "0.5rem",
-              color: "#666",
-            }}
-          >
-            Pharmacies that have completed verification and can display the
-            trusted badge.
+          <p style={{ marginTop: "0.5rem", color: "#666" }}>
+            Pharmacies that have already been approved.
           </p>
 
-          <div
-            style={{
-              overflowX: "auto",
-              marginTop: "1rem",
-            }}
-          >
-            <table
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-              }}
-            >
+          <div style={{ overflowX: "auto", marginTop: "1rem" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
                 <tr>
                   <th
@@ -207,7 +131,6 @@ export default function AdminPharmacyVerificationPage() {
                   >
                     Pharmacy
                   </th>
-
                   <th
                     style={{
                       textAlign: "left",
@@ -217,7 +140,6 @@ export default function AdminPharmacyVerificationPage() {
                   >
                     Location
                   </th>
-
                   <th
                     style={{
                       textAlign: "left",
@@ -225,37 +147,17 @@ export default function AdminPharmacyVerificationPage() {
                       borderBottom: "1px solid #ddd",
                     }}
                   >
-                    Verification
-                  </th>
-
-                  <th
-                    style={{
-                      padding: "0.75rem",
-                      borderBottom: "1px solid #ddd",
-                    }}
-                  >
-                    Actions
+                    Owner
                   </th>
                 </tr>
               </thead>
 
               <tbody>
-                {VerifiedPharmacy.map((item, index) => (
-                  <tr
-                    key={item.name}
-                    style={{
-                      background: index % 2 === 0 ? "#fafafa" : "white",
-                    }}
-                  >
+                {approvedPharmacies.map((item) => (
+                  <tr key={item.id}>
                     <td style={{ padding: "0.75rem" }}>{item.name}</td>
-
-                    <td style={{ padding: "0.75rem" }}>{item.location}</td>
-
-                    <td style={{ padding: "0.75rem" }}>✓ {item.status}</td>
-
-                    <td style={{ padding: "0.75rem" }}>
-                      <button type="button">Remove Badge</button>
-                    </td>
+                    <td style={{ padding: "0.75rem" }}>{item.city}</td>
+                    <td style={{ padding: "0.75rem" }}>{item.owner.name}</td>
                   </tr>
                 ))}
               </tbody>

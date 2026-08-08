@@ -248,3 +248,18 @@ export async function getPharmacy() {
 export async function getPharmacyId(pharmId: number) {
   return await getPharmacyResult(Number(pharmId));
 }
+
+export async function approvePharmacyAction(formData: FormData) {
+  const id = Number(formData.get("id"));
+
+  if (!Number.isInteger(id) || id <= 0) {
+    return;
+  }
+
+  await prisma.pharmacy.update({
+    where: { id },
+    data: { approved: true },
+  });
+
+  revalidatePath("/admin/verify");
+}
