@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { createToken } from "@/lib/jwt";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import {
   getPharmacyDashboardData,
@@ -261,6 +262,7 @@ export async function approvePharmacyAction(formData: FormData) {
   });
 
   revalidatePath("/admin/verify");
+  redirect("/admin/verify");
 }
 
 export async function rejectPharmacyAction(formData: FormData) {
@@ -276,4 +278,5 @@ export async function rejectPharmacyAction(formData: FormData) {
   });
 
   revalidatePath("/admin/verify");
+  redirect("/admin/verify");
 }
