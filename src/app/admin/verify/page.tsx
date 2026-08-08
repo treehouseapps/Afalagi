@@ -15,6 +15,7 @@ export default async function AdminPharmacyVerificationPage() {
     where: { approved: true },
     orderBy: { createdAt: "desc" },
     include: { owner: true },
+    take: 4,
   });
 
   return (
@@ -112,10 +113,10 @@ export default async function AdminPharmacyVerificationPage() {
             borderRadius: "18px",
           }}
         >
-          <h2>Approved Pharmacies</h2>
+          <h2>Recently Approved</h2>
 
           <p style={{ marginTop: "0.5rem", color: "#666" }}>
-            Pharmacies that have already been approved.
+            The latest pharmacies that were approved.
           </p>
 
           <div style={{ overflowX: "auto", marginTop: "1rem" }}>
