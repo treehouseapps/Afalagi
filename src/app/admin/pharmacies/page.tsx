@@ -21,7 +21,6 @@ export default function AdminPharmaciesPage() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCity, setSelectedCity] = useState("");
 
   const loadPharmacies = async () => {
     setLoading(true);
@@ -42,12 +41,8 @@ export default function AdminPharmaciesPage() {
       pharmacy.address.toLowerCase().includes(search) ||
       pharmacy.city.toLowerCase().includes(search);
 
-    const matchCity = selectedCity === "" || pharmacy.city === selectedCity;
-
-    return matchSearch && matchCity;
+    return pharmacy.approved && matchSearch;
   });
-
-  const cities = [...new Set(pharmacies.map((item) => item.city))];
 
   const handleDelete = async (id: number) => {
     const confirmDelete = window.confirm(
@@ -93,19 +88,6 @@ export default function AdminPharmaciesPage() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-
-          <select
-            className="admin-select"
-            value={selectedCity}
-            onChange={(e) => setSelectedCity(e.target.value)}
-          >
-            <option value="">All Cities</option>
-            {cities.map((city) => (
-              <option key={city} value={city}>
-                {city}
-              </option>
-            ))}
-          </select>
 
           <button
             className="admin-button primary"
