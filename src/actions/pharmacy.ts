@@ -216,24 +216,23 @@ export async function getPharmacyList(pharmId: number) {
 
 export async function updatePharmacyAction(formData: FormData) {
   const id = Number(formData.get("id"));
-  const name = String(formData.get("name") ?? "").trim();
-  const address = String(formData.get("address") ?? "").trim();
-  const city = String(formData.get("city") ?? "").trim();
-  const phoneValue = formData.get("phone");
-  const phone = typeof phoneValue === "string" ? phoneValue.trim() : "";
+  const approvedValue = formData.get("approved");
+  const approved =
+    approvedValue === "true" ? true : approvedValue === "false" ? false : null;
 
   if (!Number.isInteger(id) || id <= 0) {
     throw new Error("A valid pharmacy id is required.");
   }
 
-  await updatePharmacyById(id, {
-    name,
-    address,
-    city,
-    phone: phone || null,
-  });
+  if (approved !== null) {
+    await prisma.pharmacy.update({
+      where: { id },
+      data: { approved },
+    });
+  }
 
   revalidatePath("/admin/pharmacies");
+  revalidatePath("/admin/verify");
 }
 
 export async function deletePharmacyAction(id: number) {

@@ -62,9 +62,9 @@ export default function EditPharmacyModal({
           }}
         >
           <div>
-            <h2 style={{ margin: 0 }}>Edit Pharmacy</h2>
+            <h2 style={{ margin: 0 }}>Edit Approval</h2>
             <p style={{ marginTop: ".5rem", color: "#666" }}>
-              Update pharmacy profile information.
+              Change approval status only. Other pharmacy data stays the same.
             </p>
           </div>
 
@@ -84,44 +84,18 @@ export default function EditPharmacyModal({
 
         <form onSubmit={handleSubmit}>
           <input type="hidden" name="id" value={pharmacy.id} />
+
           <div style={{ display: "grid", gap: "1.2rem" }}>
             <div>
-              <label style={labelStyle}>Pharmacy Name *</label>
-              <input
-                name="name"
-                required
-                defaultValue={pharmacy.name}
+              <label style={labelStyle}>Approval Status</label>
+              <select
+                name="approved"
+                defaultValue={pharmacy.approved ? "true" : "false"}
                 style={inputStyle}
-              />
-            </div>
-
-            <div>
-              <label style={labelStyle}>Address *</label>
-              <input
-                name="address"
-                required
-                defaultValue={pharmacy.address}
-                style={inputStyle}
-              />
-            </div>
-
-            <div>
-              <label style={labelStyle}>City *</label>
-              <input
-                name="city"
-                required
-                defaultValue={pharmacy.city}
-                style={inputStyle}
-              />
-            </div>
-
-            <div>
-              <label style={labelStyle}>Phone</label>
-              <input
-                name="phone"
-                defaultValue={pharmacy.phone ?? ""}
-                style={inputStyle}
-              />
+              >
+                <option value="false">Pending</option>
+                <option value="true">Approved</option>
+              </select>
             </div>
           </div>
 
@@ -137,7 +111,7 @@ export default function EditPharmacyModal({
               Cancel
             </button>
             <button type="submit" style={saveButton}>
-              Update Pharmacy
+              Save Approval
             </button>
           </div>
         </form>
