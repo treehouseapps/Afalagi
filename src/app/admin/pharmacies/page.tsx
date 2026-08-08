@@ -96,11 +96,10 @@ export default function AdminPharmaciesPage() {
             type="text"
             placeholder="Search pharmacies..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                setSearchQuery(searchTerm);
-              }
+            onChange={(e) => {
+              const value = e.target.value;
+              setSearchTerm(value);
+              setSearchQuery(value);
             }}
           />
 
