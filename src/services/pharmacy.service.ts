@@ -108,6 +108,46 @@ export async function updatePharmacyProfile(data: {
 
   return { ok: true };
 }
+
+export async function updatePharmacyById(
+  id: number,
+  data: {
+    name: string;
+    address: string;
+    city: string;
+    phone: string | null;
+  },
+) {
+  const pharmacy = await prisma.pharmacy.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!pharmacy) {
+    throw new Error("Pharmacy not found");
+  }
+
+  return await prisma.pharmacy.update({
+    where: { id },
+    data,
+  });
+}
+
+export async function deletePharmacyById(id: number) {
+  await prisma.inventory.deleteMany({
+    where: {
+      pharmacyId: id,
+    },
+  });
+
+  await prisma.pharmacy.delete({
+    where: {
+      id,
+    },
+  });
+}
+
 export async function getPharmacyById(pharmId: number) {
   const pharmacy = await prisma.inventory.findMany({
     where: {

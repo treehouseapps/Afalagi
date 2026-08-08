@@ -1,205 +1,204 @@
 "use client";
 
-import ViewModal from "./viewModal";
 import { useEffect, useState } from "react";
+import ViewModal from "./viewModal";
+import EditPharmacyModal from "./editPharmacyModal";
 import { Pharmacy as PharmacyType } from "@/types/pharmacy";
-import { getPharmacy } from "@/actions/pharmacy";
+import { getPharmacy, deletePharmacyAction } from "@/actions/pharmacy";
 
 export const dynamic = "force-dynamic";
 
+type Pharmacy = PharmacyType;
+
 export default function AdminPharmaciesPage() {
   const [viewOpen, setViewOpen] = useState(false);
-
-  type Pharmacy = PharmacyType;
+  const [editOpen, setEditOpen] = useState(false);
   const [selectedPharmacy, setSelectedPharmacy] = useState<Pharmacy | null>(
     null,
   );
-  const [allPharmacies, setAllPharmacies] = useState<Pharmacy[]>([]);
-  const [approvedPharmacies, setApproved] = useState<Pharmacy[]>([]);
-  const [pendingApprovals, setPending] = useState<Pharmacy[]>([]);
+  const [pharmacies, setPharmacies] = useState<Pharmacy[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
+
+  const loadPharmacies = async () => {
+    setLoading(true);
+    const results = await getPharmacy();
+    setPharmacies(results);
+    setLoading(false);
+  };
 
   useEffect(() => {
-    const getList = async () => {
-      const results = await getPharmacy();
-      setAllPharmacies(results);
-
-      const approved = results.filter((pharmacies) => {
-        return pharmacies.approved == true;
-      });
-      setApproved(approved);
-      const pending = results.filter((pharmacies) => {
-        return pharmacies.approved == false;
-      });
-      setPending(pending);
-    };
-    getList();
+    loadPharmacies();
   }, []);
 
-  const Approve = async () => {};
+  const filteredPharmacies = pharmacies.filter((pharmacy) => {
+    const search = searchQuery.toLowerCase();
+    const matchSearch =
+      search === "" ||
+      pharmacy.name.toLowerCase().includes(search) ||
+      pharmacy.address.toLowerCase().includes(search) ||
+      pharmacy.city.toLowerCase().includes(search);
 
-  const Reject = () => {};
+    const matchCity = selectedCity === "" || pharmacy.city === selectedCity;
+
+    return matchSearch && matchCity;
+  });
+
+  const cities = [...new Set(pharmacies.map((item) => item.city))];
+
+  const handleDelete = async (id: number) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to remove this pharmacy?",
+    );
+
+    if (!confirmDelete) return;
+
+    await deletePharmacyAction(id);
+    setPharmacies((prev) => prev.filter((pharmacy) => pharmacy.id !== id));
+  };
+
+  const openEdit = (pharmacy: Pharmacy) => {
+    setSelectedPharmacy(pharmacy);
+    setEditOpen(true);
+  };
+
   return (
-    <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
-      <h1>Admin Pharmacy Approvals</h1>
-      <p style={{ maxWidth: "720px", marginTop: "0.5rem", color: "#555" }}>
-        Review and manage pharmacy registration requests, update statuses, and
-        access pharmacy details.
+    <main className="admin-page">
+      <h1>Admin Pharmacy Management</h1>
+
+      <p>
+        Manage the registered pharmacy directory with view, edit, and remove
+        actions.
       </p>
 
-      <section
-        style={{ marginTop: "1.75rem", display: "grid", gap: "1.25rem" }}
-      >
-        <div
-          style={{
-            padding: "1.5rem",
-            border: "1px solid #ddd",
-            borderRadius: "18px",
-          }}
-        >
-          <h2>Pending pharmacy approvals</h2>
-          <p style={{ marginTop: "0.5rem", color: "#666" }}>
-            Review new pharmacy registrations and approve or reject them from
-            the admin panel.
-          </p>
-          <div style={{ marginTop: "1rem", display: "grid", gap: "1rem" }}>
-            {pendingApprovals.map((item) => (
-              <div
-                key={item.name}
-                style={{
-                  padding: "1rem",
-                  border: "1px solid #eee",
-                  borderRadius: "14px",
-                  background: "#fafafa",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    gap: "1rem",
-                  }}
-                >
-                  <div>
-                    <p style={{ margin: 0, fontWeight: 700 }}>{item.name}</p>
-                    <p style={{ margin: "0.25rem 0 0", color: "#666" }}>
-                      {item.address}
-                    </p>
-                  </div>
-                  <div style={{ display: "flex", gap: "0.75rem" }}>
-                    <button
-                      onClick={Approve}
-                      type="button"
-                      style={{ padding: "0.75rem 1rem" }}
-                    >
-                      Approve
-                    </button>
-                    <button
-                      onClick={Reject}
-                      type="button"
-                      style={{ padding: "0.75rem 1rem" }}
-                    >
-                      Reject
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
+      <section className="admin-section">
+        <div className="admin-section-header">
+          <div>
+            <h2>Pharmacy Directory</h2>
+            <p>
+              Search pharmacies by name, address, or city and manage their
+              profile details.
+            </p>
           </div>
         </div>
 
-        <div
-          style={{
-            padding: "1.5rem",
-            border: "1px solid #ddd",
-            borderRadius: "18px",
-          }}
-        >
-          <h2>Approved pharmacies</h2>
-          <p style={{ marginTop: "0.5rem", color: "#666" }}>
-            View approved pharmacies and manage their active admin settings.
-          </p>
-          <div style={{ overflowX: "auto", marginTop: "1rem" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
-              <thead>
+        <div className="admin-filter-area">
+          <input
+            className="admin-input"
+            type="text"
+            placeholder="Search pharmacies..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+
+          <select
+            className="admin-select"
+            value={selectedCity}
+            onChange={(e) => setSelectedCity(e.target.value)}
+          >
+            <option value="">All Cities</option>
+            {cities.map((city) => (
+              <option key={city} value={city}>
+                {city}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="admin-button primary"
+            type="button"
+            onClick={() => setSearchQuery(searchTerm)}
+          >
+            Search
+          </button>
+        </div>
+      </section>
+
+      <section className="admin-section">
+        <h2>All Pharmacies</h2>
+        <p>View, edit, and remove pharmacies from the system.</p>
+
+        <div className="admin-table-wrapper">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Address</th>
+                <th>City</th>
+                <th>Phone</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
                 <tr>
-                  <th
-                    style={{
-                      textAlign: "left",
-                      padding: "0.75rem",
-                      borderBottom: "1px solid #ddd",
-                    }}
-                  >
-                    Pharmacy
-                  </th>
-                  <th
-                    style={{
-                      textAlign: "left",
-                      padding: "0.75rem",
-                      borderBottom: "1px solid #ddd",
-                    }}
-                  >
-                    Location
-                  </th>
-                  <th
-                    style={{
-                      textAlign: "left",
-                      padding: "0.75rem",
-                      borderBottom: "1px solid #ddd",
-                    }}
-                  >
-                    Status
-                  </th>
-                  <th
-                    style={{
-                      padding: "0.75rem",
-                      borderBottom: "1px solid #ddd",
-                    }}
-                  >
-                    Actions
-                  </th>
+                  <td colSpan={6} className="admin-empty">
+                    Loading pharmacies...
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {approvedPharmacies.map((item, index) => (
-                  <tr
-                    key={item.id}
-                    style={{
-                      background: index % 2 === 0 ? "#fafafa" : "white",
-                    }}
-                  >
-                    <td style={{ padding: "0.75rem" }}>{item.name}</td>
-                    <td>{item.city}</td>
-                    <td>{item.approved ? "Approved" : "Pending"}</td>
-                    <td
-                      style={{
-                        paddingLeft: " 0.75rem",
-                        textAlign: "center",
-                      }}
-                    >
+              ) : filteredPharmacies.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="admin-empty">
+                    No pharmacies found. Adjust your search or add new entries.
+                  </td>
+                </tr>
+              ) : (
+                filteredPharmacies.map((pharmacy) => (
+                  <tr key={pharmacy.id}>
+                    <td>{pharmacy.name}</td>
+                    <td>{pharmacy.address}</td>
+                    <td>{pharmacy.city}</td>
+                    <td>{pharmacy.phone ?? "-"}</td>
+                    <td>{pharmacy.approved ? "Approved" : "Pending"}</td>
+                    <td>
                       <button
+                        className="admin-action-button edit"
                         type="button"
                         onClick={() => {
-                          setSelectedPharmacy(item);
+                          setSelectedPharmacy(pharmacy);
                           setViewOpen(true);
                         }}
-                        style={{ marginRight: "0.5rem" }}
                       >
                         View
                       </button>
-                      <button type="button">Suspend</button>
+                      <button
+                        className="admin-action-button edit"
+                        type="button"
+                        onClick={() => openEdit(pharmacy)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="admin-action-button delete"
+                        type="button"
+                        onClick={() => handleDelete(pharmacy.id)}
+                      >
+                        Remove
+                      </button>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       </section>
+
       <ViewModal
         open={viewOpen}
         onClose={() => setViewOpen(false)}
         pharmacy={selectedPharmacy}
+      />
+
+      <EditPharmacyModal
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        pharmacy={selectedPharmacy}
+        onSuccess={loadPharmacies}
       />
     </main>
   );

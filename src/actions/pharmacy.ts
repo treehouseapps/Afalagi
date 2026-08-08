@@ -5,6 +5,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { createToken } from "@/lib/jwt";
 import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
 import { getCurrentUser } from "@/lib/auth";
 import {
   getPharmacyDashboardData,
@@ -13,6 +14,8 @@ import {
   getPharmacyById,
   getAllPharmacy,
   getPharmacyResult,
+  updatePharmacyById,
+  deletePharmacyById,
 } from "@/services/pharmacy.service";
 
 export async function CreatePharmacy(
@@ -48,7 +51,7 @@ export async function CreatePharmacy(
     });
 
   if (!credentials.success) {
-    return { ok: false, error: "Invalid input." };
+    // return { ok: false, error: "Invalid input." };
   }
 
   if (password !== cpassword) {
@@ -210,9 +213,38 @@ export async function getMyInventory() {
 export async function getPharmacyList(pharmId: number) {
   return await getPharmacyById(Number(pharmId));
 }
+
+export async function updatePharmacyAction(formData: FormData) {
+  const id = Number(formData.get("id"));
+  const name = String(formData.get("name") ?? "").trim();
+  const address = String(formData.get("address") ?? "").trim();
+  const city = String(formData.get("city") ?? "").trim();
+  const phoneValue = formData.get("phone");
+  const phone = typeof phoneValue === "string" ? phoneValue.trim() : "";
+
+  if (!Number.isInteger(id) || id <= 0) {
+    throw new Error("A valid pharmacy id is required.");
+  }
+
+  await updatePharmacyById(id, {
+    name,
+    address,
+    city,
+    phone: phone || null,
+  });
+
+  revalidatePath("/admin/pharmacies");
+}
+
+export async function deletePharmacyAction(id: number) {
+  await deletePharmacyById(id);
+  revalidatePath("/admin/pharmacies");
+}
+
 export async function getPharmacy() {
   return await getAllPharmacy();
 }
+
 export async function getPharmacyId(pharmId: number) {
   return await getPharmacyResult(Number(pharmId));
 }
