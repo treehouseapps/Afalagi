@@ -11,6 +11,19 @@ export interface Medicine {
   sideEffect?: string | null;
   expiryDate?: Date | string | null;
 }
+export type PharmacyMedicine = {
+  id: number;
+  name: string;
+  description?: string | null;
+  genericName?: string | null;
+  manufacturer?: string | null;
+  category: string;
+  dosage?: string | null;
+  sideEffect?: string | null;
+  price: number | null;
+  quantity?: number | null;
+  expiryDate?: Date | string | null;
+};
 
 export type InventoryMedicine = {
   id: number;

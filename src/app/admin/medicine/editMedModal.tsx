@@ -126,6 +126,26 @@ export default function EditMedicineModal({
             </div>
 
             <div>
+              <label style={labelStyle}>Dosage</label>
+
+              <input
+                name="dosage"
+                defaultValue={medicine.dosage ?? ""}
+                style={inputStyle}
+              />
+            </div>
+
+            <div>
+              <label style={labelStyle}>Side Effect</label>
+
+              <input
+                name="sideEffect"
+                defaultValue={medicine.sideEffect ?? ""}
+                style={inputStyle}
+              />
+            </div>
+
+            <div>
               <label style={labelStyle}>Manufacturer</label>
 
               <input

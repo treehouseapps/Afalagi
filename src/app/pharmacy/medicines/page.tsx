@@ -6,11 +6,11 @@ import Link from "next/link";
 
 import { removeMedicine } from "@/actions/inventory";
 import { getMyInventory } from "@/actions/pharmacy";
-import { Medicine as MedicineType } from "@/types/medicine";
+import { PharmacyMedicine } from "@/types/medicine";
 
 import styles from "../pharmacy.module.css";
 
-type Medicine = MedicineType;
+type Medicine = PharmacyMedicine;
 
 export const dynamic = "force-dynamic";
 
@@ -100,10 +100,15 @@ export default function MedicinesPage() {
 
                       {medicine.name}
                     </td>
-
                     <td>{medicine.category}</td>
+                    <td>{medicine.manufacturer}</td>
 
-                    <td>{medicine.manufacturer || "-"}</td>
+                    <td>
+                      {medicine.price != null
+                        ? `$${medicine.price.toFixed(2)}`
+                        : "-"}
+                    </td>
+                    <td>{medicine.quantity}</td>
 
                     <td>
                       {medicine.expiryDate
