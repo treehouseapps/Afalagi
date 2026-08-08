@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { approvePharmacyAction } from "@/actions/pharmacy";
+import {
+  approvePharmacyAction,
+  rejectPharmacyAction,
+} from "@/actions/pharmacy";
+import { ConfirmActionButton } from "./ConfirmActionButton";
 
 export const dynamic = "force-dynamic";
 
@@ -91,12 +95,24 @@ export default async function AdminPharmacyVerificationPage() {
 
                       <form action={approvePharmacyAction}>
                         <input type="hidden" name="id" value={pharmacy.id} />
-                        <button
-                          type="submit"
+                        <ConfirmActionButton
+                          action={approvePharmacyAction}
+                          confirmText="Are you sure you want to approve this pharmacy?"
                           style={{ padding: "0.75rem 1rem" }}
                         >
                           Approve
-                        </button>
+                        </ConfirmActionButton>
+                      </form>
+
+                      <form action={rejectPharmacyAction}>
+                        <input type="hidden" name="id" value={pharmacy.id} />
+                        <ConfirmActionButton
+                          action={rejectPharmacyAction}
+                          confirmText="Are you sure you want to reject this pharmacy?"
+                          style={{ padding: "0.75rem 1rem" }}
+                        >
+                          Reject
+                        </ConfirmActionButton>
                       </form>
                     </div>
                   </div>

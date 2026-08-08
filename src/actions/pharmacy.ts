@@ -262,3 +262,18 @@ export async function approvePharmacyAction(formData: FormData) {
 
   revalidatePath("/admin/verify");
 }
+
+export async function rejectPharmacyAction(formData: FormData) {
+  const id = Number(formData.get("id"));
+
+  if (!Number.isInteger(id) || id <= 0) {
+    return;
+  }
+
+  await prisma.pharmacy.update({
+    where: { id },
+    data: { approved: false },
+  });
+
+  revalidatePath("/admin/verify");
+}

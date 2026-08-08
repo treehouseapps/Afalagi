@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { approvePharmacyAction } from "@/actions/pharmacy";
+import {
+  approvePharmacyAction,
+  rejectPharmacyAction,
+} from "@/actions/pharmacy";
+import { ConfirmActionButton } from "../ConfirmActionButton";
 
 type Props = {
   params: {
@@ -57,21 +61,41 @@ export default async function PharmacyVerificationDetailsPage({
         {pharmacy.approved ? (
           <p style={{ color: "green" }}>This pharmacy is already approved.</p>
         ) : (
-          <form action={approvePharmacyAction}>
-            <input type="hidden" name="id" value={pharmacy.id} />
-            <button
-              type="submit"
-              style={{
-                padding: "0.8rem 1.5rem",
-                background: "green",
-                color: "white",
-                borderRadius: "8px",
-                border: "none",
-              }}
-            >
-              Approve
-            </button>
-          </form>
+          <>
+            <form action={approvePharmacyAction}>
+              <input type="hidden" name="id" value={pharmacy.id} />
+              <ConfirmActionButton
+                action={approvePharmacyAction}
+                confirmText="Are you sure you want to approve this pharmacy?"
+                style={{
+                  padding: "0.8rem 1.5rem",
+                  background: "green",
+                  color: "white",
+                  borderRadius: "8px",
+                  border: "none",
+                }}
+              >
+                Approve
+              </ConfirmActionButton>
+            </form>
+
+            <form action={rejectPharmacyAction}>
+              <input type="hidden" name="id" value={pharmacy.id} />
+              <ConfirmActionButton
+                action={rejectPharmacyAction}
+                confirmText="Are you sure you want to reject this pharmacy?"
+                style={{
+                  padding: "0.8rem 1.5rem",
+                  background: "crimson",
+                  color: "white",
+                  borderRadius: "8px",
+                  border: "none",
+                }}
+              >
+                Reject
+              </ConfirmActionButton>
+            </form>
+          </>
         )}
       </section>
     </main>
