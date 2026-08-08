@@ -12,7 +12,7 @@ export default function PharmaciesPage() {
   useEffect(() => {
     const listPharm = async () => {
       const result = await getPharmacy();
-      setPharmacies(result);
+      setPharmacies(result.filter((pharmacy) => pharmacy.approved));
     };
     listPharm();
   }, []);
