@@ -21,6 +21,7 @@ export default function AdminPharmaciesPage() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   const loadPharmacies = async () => {
     setLoading(true);
@@ -33,16 +34,25 @@ export default function AdminPharmaciesPage() {
     loadPharmacies();
   }, []);
 
-  const filteredPharmacies = pharmacies.filter((pharmacy) => {
-    const search = searchQuery.toLowerCase();
-    const matchSearch =
-      search === "" ||
-      pharmacy.name.toLowerCase().includes(search) ||
-      pharmacy.address.toLowerCase().includes(search) ||
-      pharmacy.city.toLowerCase().includes(search);
+  const filteredPharmacies = pharmacies
+    .filter((pharmacy) => {
+      const search = searchQuery.toLowerCase();
+      const matchSearch =
+        search === "" ||
+        pharmacy.name.toLowerCase().includes(search) ||
+        pharmacy.address.toLowerCase().includes(search) ||
+        pharmacy.city.toLowerCase().includes(search);
 
-    return pharmacy.approved && matchSearch;
-  });
+      return pharmacy.approved && matchSearch;
+    })
+    .sort((a, b) => {
+      const nameA = a.name.toLowerCase();
+      const nameB = b.name.toLowerCase();
+
+      if (nameA < nameB) return sortOrder === "asc" ? -1 : 1;
+      if (nameA > nameB) return sortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
 
   const handleDelete = async (id: number) => {
     const confirmDelete = window.confirm(
@@ -87,14 +97,21 @@ export default function AdminPharmaciesPage() {
             placeholder="Search pharmacies..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                setSearchQuery(searchTerm);
+              }
+            }}
           />
 
           <button
             className="admin-button primary"
             type="button"
-            onClick={() => setSearchQuery(searchTerm)}
+            onClick={() => {
+              setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+            }}
           >
-            Search
+            Sort: {sortOrder === "asc" ? "A–Z" : "Z–A"}
           </button>
         </div>
       </section>
