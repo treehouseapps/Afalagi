@@ -49,25 +49,33 @@ export async function deleteInventoryAction(id: number) {
 export async function addMedicineToPharmacy(medicineId: number) {
   const token = cookies().get("token")?.value;
 
-  if (!token) throw new Error("Not authenticated");
+  if (!token) return { success: false, message: "Not authenticated." };
 
-  const result = await verifyToken(token);
-
-  const userId = result.payload.id;
-
-  return await addMedicineToPharm(medicineId, Number(userId));
+  try {
+    const result = await verifyToken(token);
+    const userId = result.payload.id;
+    return await addMedicineToPharm(medicineId, Number(userId));
+  } catch (error) {
+    return { success: false, message: "Unable to add medicine right now." };
+  }
 }
 
 export async function removeMedicine(inventoryId: number) {
-  const result = await removeMedicineFromPharmacy(inventoryId);
-
-  revalidatePath("/pharmacy/inventory");
-
-  return result;
+  try {
+    const result = await removeMedicineFromPharmacy(inventoryId);
+    revalidatePath("/pharmacy/inventory");
+    return result;
+  } catch (error) {
+    return { success: false, message: "Unable to remove medicine right now." };
+  }
 }
 
 export async function getInventoryMedicine(id: number) {
-  return await getinventorymed(id);
+  try {
+    return await getinventorymed(id);
+  } catch (error) {
+    return null;
+  }
 }
 
 export async function updateInventoryMedicine(data: {
@@ -76,5 +84,9 @@ export async function updateInventoryMedicine(data: {
   price: number | null;
   expiryDate: Date | null;
 }) {
-  return await updateInventoryMed(data);
+  try {
+    return await updateInventoryMed(data);
+  } catch (error) {
+    throw new Error("Unable to update inventory right now.");
+  }
 }

@@ -52,57 +52,61 @@ export async function CreatePharmacy(
     });
 
   if (!credentials.success) {
-    // return { ok: false, error: "Invalid input." };
+    return { ok: false, error: "Invalid registration input." };
   }
 
   if (password !== cpassword) {
     return { ok: false, error: "Passwords do not match." };
   }
 
-  const existingUser = await prisma.user.findUnique({
-    where: { email },
-  });
+  try {
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
 
-  if (existingUser) {
-    return { ok: false, error: "Email already exists." };
+    if (existingUser) {
+      return { ok: false, error: "Email already exists." };
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await prisma.user.create({
+      data: {
+        name: userName,
+        email,
+        password: hashedPassword,
+        role: "PHARMACIST",
+        phone,
+      },
+    });
+
+    await prisma.pharmacy.create({
+      data: {
+        ownerId: user.id,
+        name: pharmacyName,
+        address: pharmAddress,
+        city,
+        phone,
+      },
+    });
+
+    const token = await createToken({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
+
+    const cookieStore = await cookies();
+
+    cookieStore.set("token", token, {
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24,
+    });
+
+    return { ok: true };
+  } catch (error) {
+    return { ok: false, error: getDbErrorMessage(error) };
   }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  const user = await prisma.user.create({
-    data: {
-      name: userName,
-      email,
-      password: hashedPassword,
-      role: "PHARMACIST",
-      phone,
-    },
-  });
-
-  await prisma.pharmacy.create({
-    data: {
-      ownerId: user.id,
-      name: pharmacyName,
-      address: pharmAddress,
-      city,
-      phone,
-    },
-  });
-
-  const token = await createToken({
-    id: user.id,
-    email: user.email,
-    role: user.role,
-  });
-
-  const cookieStore = await cookies();
-
-  cookieStore.set("token", token, {
-    sameSite: "strict",
-    maxAge: 60 * 60 * 24,
-  });
-
-  return { ok: true };
 }
 export async function getMyProfile() {
   const user = await getCurrentUser();
@@ -155,7 +159,16 @@ export async function getPharmacyDashboard() {
     throw new Error("Unauthorized");
   }
 
-  return await getPharmacyDashboardData(user.id);
+  try {
+    return await getPharmacyDashboardData(user.id);
+  } catch (error) {
+    return {
+      pharmacyStatus: "Unavailable",
+      totalMedicines: 0,
+      medicines: [],
+      error: getDbErrorMessage(error),
+    };
+  }
 }
 
 export async function getMyInventory() {
@@ -169,46 +182,55 @@ export async function getMyInventory() {
     };
   }
 
-  const pharmacy = await prisma.pharmacy.findFirst({
-    where: {
-      ownerId: Number(user.id),
-    },
-  });
+  try {
+    const pharmacy = await prisma.pharmacy.findFirst({
+      where: {
+        ownerId: Number(user.id),
+      },
+    });
 
-  if (!pharmacy) {
+    if (!pharmacy) {
+      return {
+        pharmacyStatus: "No Pharmacy",
+        totalMedicines: 0,
+        medicines: [],
+      };
+    }
+
+    const inventory = await prisma.inventory.findMany({
+      where: {
+        pharmacyId: pharmacy.id,
+      },
+      include: {
+        medicine: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
     return {
-      pharmacyStatus: "No Pharmacy",
+      pharmacyStatus: pharmacy.approved ? "Approved" : "Pending Approval",
+      totalMedicines: inventory.length,
+      medicines: inventory.map((item) => ({
+        id: item.id,
+        medicineId: item.medicine.id,
+        name: item.medicine.name,
+        category: item.medicine.category,
+        manufacturer: item.medicine.manufacturer,
+        quantity: item.quantity,
+        price: item.price,
+        expiryDate: item.expiryDate,
+      })),
+    };
+  } catch (error) {
+    return {
+      pharmacyStatus: "Unavailable",
       totalMedicines: 0,
       medicines: [],
+      error: getDbErrorMessage(error),
     };
   }
-
-  const inventory = await prisma.inventory.findMany({
-    where: {
-      pharmacyId: pharmacy.id,
-    },
-    include: {
-      medicine: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-
-  return {
-    pharmacyStatus: pharmacy.approved ? "Approved" : "Pending Approval",
-    totalMedicines: inventory.length,
-    medicines: inventory.map((item) => ({
-      id: item.id,
-      medicineId: item.medicine.id,
-      name: item.medicine.name,
-      category: item.medicine.category,
-      manufacturer: item.medicine.manufacturer,
-      quantity: item.quantity,
-      price: item.price,
-      expiryDate: item.expiryDate,
-    })),
-  };
 }
 
 export async function getPharmacyList(pharmId: number) {

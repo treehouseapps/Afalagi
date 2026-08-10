@@ -1,51 +1,57 @@
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { getDbErrorMessage } from "@/lib/utils";
 
 export async function getPharmacyDashboardData(userId: number) {
-  const pharmacy = await prisma.pharmacy.findFirst({
-    where: {
-      ownerId: userId,
-    },
-    include: {
-      inventory: {
-        take: 5,
-        orderBy: {
-          createdAt: "desc",
-        },
-        include: {
-          medicine: true,
+  try {
+    const pharmacy = await prisma.pharmacy.findFirst({
+      where: {
+        ownerId: userId,
+      },
+      include: {
+        inventory: {
+          take: 5,
+          orderBy: {
+            createdAt: "desc",
+          },
+          include: {
+            medicine: true,
+          },
         },
       },
-    },
-  });
+    });
 
-  if (!pharmacy) {
-    throw new Error("Pharmacy not found");
+    if (!pharmacy) {
+      throw new Error("Pharmacy not found");
+    }
+    const totalMedicines = await prisma.inventory.count({
+      where: {
+        pharmacyId: pharmacy.id,
+      },
+    });
+
+    return {
+      pharmacyStatus: pharmacy.approved ? "Approved" : "Pending Approval",
+      totalMedicines,
+      medicines: pharmacy.inventory.map((item) => ({
+        id: item.id,
+        medicineId: item.medicineId,
+        name: item.medicine.name,
+        category: item.medicine.category,
+        manufacturer: item.medicine.manufacturer,
+        quantity: item.quantity,
+        price: item.price,
+        expiryDate: item.expiryDate,
+      })),
+    };
+  } catch (error) {
+    return {
+      pharmacyStatus: "Unavailable",
+      totalMedicines: 0,
+      medicines: [],
+      error: getDbErrorMessage(error),
+    };
   }
-  const totalMedicines = await prisma.inventory.count({
-    where: {
-      pharmacyId: pharmacy.id,
-    },
-  });
-
-  return {
-    pharmacyStatus: pharmacy.approved ? "Approved" : "Pending Approval",
-
-    totalMedicines,
-
-    medicines: pharmacy.inventory.map((item) => ({
-      id: item.id,
-      medicineId: item.medicineId,
-
-      name: item.medicine.name,
-      category: item.medicine.category,
-      manufacturer: item.medicine.manufacturer,
-
-      quantity: item.quantity,
-      price: item.price,
-      expiryDate: item.expiryDate,
-    })),
-  };
 }
 export async function getPharmacyProfile() {
   const user = await getCurrentUser();
@@ -54,28 +60,32 @@ export async function getPharmacyProfile() {
     throw new Error("Unauthorized");
   }
 
-  const pharmacy = await prisma.pharmacy.findFirst({
-    where: {
-      ownerId: Number(user.id),
-    },
-    include: {
-      owner: true,
-    },
-  });
+  try {
+    const pharmacy = await prisma.pharmacy.findFirst({
+      where: {
+        ownerId: Number(user.id),
+      },
+      include: {
+        owner: true,
+      },
+    });
 
-  if (!pharmacy) {
-    throw new Error("Pharmacy not found");
+    if (!pharmacy) {
+      throw new Error("Pharmacy not found");
+    }
+
+    return {
+      name: pharmacy.name,
+      phone: pharmacy.phone || "",
+      email: pharmacy.owner.email,
+      city: pharmacy.city,
+      ownerName: pharmacy.owner.name,
+      address: pharmacy.address,
+      approved: pharmacy.approved,
+    };
+  } catch (error) {
+    return { error: getDbErrorMessage(error) } as any;
   }
-
-  return {
-    name: pharmacy.name,
-    phone: pharmacy.phone || "",
-    email: pharmacy.owner.email,
-    city: pharmacy.city,
-    ownerName: pharmacy.owner.name,
-    address: pharmacy.address,
-    approved: pharmacy.approved,
-  };
 }
 export async function updatePharmacyProfile(data: {
   name: string;
@@ -89,24 +99,28 @@ export async function updatePharmacyProfile(data: {
     return { ok: false };
   }
 
-  const pharmacy = await prisma.pharmacy.findFirst({
-    where: {
-      ownerId: Number(user.id),
-    },
-  });
+  try {
+    const pharmacy = await prisma.pharmacy.findFirst({
+      where: {
+        ownerId: Number(user.id),
+      },
+    });
 
-  if (!pharmacy) {
-    return { ok: false };
+    if (!pharmacy) {
+      return { ok: false };
+    }
+
+    await prisma.pharmacy.update({
+      where: {
+        id: pharmacy.id,
+      },
+      data,
+    });
+
+    return { ok: true };
+  } catch (error) {
+    return { ok: false, error: getDbErrorMessage(error) };
   }
-
-  await prisma.pharmacy.update({
-    where: {
-      id: pharmacy.id,
-    },
-    data,
-  });
-
-  return { ok: true };
 }
 
 export async function updatePharmacyById(
@@ -118,72 +132,82 @@ export async function updatePharmacyById(
     phone: string | null;
   },
 ) {
-  const pharmacy = await prisma.pharmacy.findUnique({
-    where: {
-      id,
-    },
-  });
+  try {
+    const pharmacy = await prisma.pharmacy.findUnique({
+      where: {
+        id,
+      },
+    });
 
-  if (!pharmacy) {
-    throw new Error("Pharmacy not found");
+    if (!pharmacy) {
+      throw new Error("Pharmacy not found");
+    }
+
+    return await prisma.pharmacy.update({
+      where: { id },
+      data,
+    });
+  } catch (error) {
+    return { ok: false, error: getDbErrorMessage(error) } as any;
   }
-
-  return await prisma.pharmacy.update({
-    where: { id },
-    data,
-  });
 }
 
 export async function deletePharmacyById(id: number) {
-  await prisma.inventory.deleteMany({
-    where: {
-      pharmacyId: id,
-    },
-  });
+  try {
+    await prisma.inventory.deleteMany({
+      where: {
+        pharmacyId: id,
+      },
+    });
 
-  await prisma.pharmacy.delete({
-    where: {
-      id,
-    },
-  });
+    await prisma.pharmacy.delete({
+      where: {
+        id,
+      },
+    });
+
+    return { ok: true };
+  } catch (error) {
+    return { ok: false, error: getDbErrorMessage(error) };
+  }
 }
 
 export async function getPharmacyById(pharmId: number) {
-  const pharmacy = await prisma.inventory.findMany({
-    where: {
-      medicineId: Number(pharmId),
-    },
-    include: {
-      pharmacy: true,
-    },
-  });
-  if (!pharmacy) {
-    throw new Error("Pharmacy not found");
-  }
+  try {
+    const pharmacy = await prisma.inventory.findMany({
+      where: {
+        medicineId: Number(pharmId),
+      },
+      include: {
+        pharmacy: true,
+      },
+    });
 
-  return {
-    pharmacy,
-  };
+    return {
+      pharmacy,
+    };
+  } catch (error) {
+    return { pharmacy: [] };
+  }
 }
 export async function getAllPharmacy() {
-  const pharmacyList = await prisma.pharmacy.findMany();
-
-  if (!pharmacyList) {
-    throw new Error("Pharmacy not found");
+  try {
+    const pharmacyList = await prisma.pharmacy.findMany();
+    return pharmacyList;
+  } catch (error) {
+    return [];
   }
-
-  return pharmacyList;
 }
 export async function getPharmacyResult(pharmId: number) {
-  const pharmacy = await prisma.pharmacy.findFirst({
-    where: {
-      id: pharmId,
-    },
-  });
+  try {
+    const pharmacy = await prisma.pharmacy.findFirst({
+      where: {
+        id: pharmId,
+      },
+    });
 
-  if (!pharmacy) {
-    throw new Error("Pharmacy not found");
+    return pharmacy;
+  } catch (error) {
+    return null;
   }
-
-  return pharmacy;
 }

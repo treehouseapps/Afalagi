@@ -10,6 +10,7 @@ import {
   getAllMedicines,
   getMedById,
 } from "@/services/medicine.service";
+import { getDbErrorMessage } from "@/lib/utils";
 
 function optionalText(formData: FormData, field: string) {
   const value = formData.get(field);
@@ -59,18 +60,28 @@ export async function getMedicinesForPharmacy() {
   return await getAllMedicines();
 }
 export async function getAllMedicine() {
-  const inventory = await getAllMedicines();
+  try {
+    const inventory = await getAllMedicines();
 
-  return inventory.map((item) => ({
-    id: item.id,
-    medicineId: item.medicine.id,
-    name: item.medicine.name,
-    describtion: item.medicine.description,
-    category: item.medicine.category,
-    genericName: item.medicine.genericName,
-    manufacturer: item.medicine.manufacturer,
-  }));
+    const result = inventory.map((item) => ({
+      id: item.id,
+      medicineId: item.medicine.id,
+      name: item.medicine.name,
+      describtion: item.medicine.description,
+      category: item.medicine.category,
+      genericName: item.medicine.genericName,
+      manufacturer: item.medicine.manufacturer,
+    }));
+
+    return { ok: true, result };
+  } catch (error) {
+    return { ok: false, error: getDbErrorMessage(error) };
+  }
 }
 export async function getMedicineById(medId: number) {
-  return await getMedById(medId);
+  try {
+    return await getMedById(medId);
+  } catch (error) {
+    return null;
+  }
 }

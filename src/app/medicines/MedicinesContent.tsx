@@ -19,7 +19,9 @@ export default function MedicinesContent() {
   useEffect(() => {
     const getmed = async () => {
       const result = await getAllMedicine();
-      setMedicines(result);
+      if (result.ok) {
+        setMedicines(result);
+      }
     };
 
     getmed();
