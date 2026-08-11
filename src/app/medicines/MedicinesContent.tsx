@@ -6,25 +6,22 @@ import { Search, Filter } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useSearchParams } from "next/navigation";
-import { getAllMedicine } from "@/actions/medicine";
 import { InventoryMedicine as medicineType } from "@/types/medicine";
 
-export default function MedicinesContent() {
-  const [medicines, setMedicines] = useState<medicineType[]>([]);
+type Props = {
+  initialMedicines: medicineType[];
+};
+
+export default function MedicinesContent({ initialMedicines }: Props) {
+  const [medicines, setMedicines] = useState<medicineType[]>(
+    initialMedicines ?? [],
+  );
   const searchParams = useSearchParams();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   useEffect(() => {
-    const getmed = async () => {
-      const result = await getAllMedicine();
-      if (result.ok) {
-        setMedicines(result);
-      }
-    };
-
-    getmed();
     setSearchTerm(searchParams.get("search") ?? "");
   }, [searchParams]);
 
