@@ -5,7 +5,10 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminPharmacyVerificationPage() {
   const pendingPharmacies = await prisma.pharmacy.findMany({
-    where: { approved: false },
+    where: {
+      approved: false,
+      documentStatus: "PENDING",
+    },
     orderBy: { createdAt: "desc" },
     include: { owner: true },
   });
