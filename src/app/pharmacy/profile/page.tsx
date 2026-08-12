@@ -1,7 +1,15 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
-import { Edit2, Mail, MapPin, Phone, Save, Store } from "lucide-react";
+import {
+  Edit2,
+  FileText,
+  Mail,
+  MapPin,
+  Save,
+  Store,
+  Upload,
+} from "lucide-react";
 import styles from "../pharmacy.module.css";
 import { Profile as ProfileType } from "../../../types/pharmacy";
 import { getMyPharmacyProfile, updateMyProfile } from "@/actions/pharmacy";
@@ -56,12 +64,15 @@ export default function ProfilePage() {
   }
 
   const fields: [keyof Profile, string, ReactNode][] = [
-    ["phone", "Phone", <Phone size={16} />],
-    ["email", "Email", <Mail size={16} />],
+    ["phone", "Phone", <PhoneIcon key="phone" />],
+    ["email", "Email", <Mail size={16} key="email" />],
   ];
+
+  const isVerified = profile.approved;
 
   return (
     <form className={styles.profilePage} onSubmit={submit}>
+      {/* Profile Information */}
       <article className={styles.profileCard}>
         <div className={styles.profileCover} />
 
@@ -93,6 +104,7 @@ export default function ProfilePage() {
           </div>
 
           <div className={styles.profileGrid}>
+            {/* Basic Information */}
             <section>
               <Field
                 editing={editing}
@@ -111,11 +123,12 @@ export default function ProfilePage() {
               <Field
                 editing={false}
                 label="Status"
-                value={profile.approved ? "Verified" : "Pending Approval"}
+                value={isVerified ? "Verified" : "Pending Approval"}
                 onChange={() => {}}
               />
             </section>
 
+            {/* Contact Details */}
             <section>
               <h2>Contact Details</h2>
 
@@ -176,8 +189,75 @@ export default function ProfilePage() {
           )}
         </div>
       </article>
+
+      <article className={styles.profileCard}>
+        <div className={styles.profileBody}>
+          <div className={styles.profileTop}>
+            <div>
+              <br />
+              <h2>Verification Documents</h2>
+
+              <p>
+                Upload your pharmacy license or registration document for
+                verification.
+              </p>
+            </div>
+
+            <FileText size={28} />
+          </div>
+
+          <div className={styles.documentSection}>
+            {isVerified ? (
+              <>
+                <div className={styles.documentStatus}>
+                  <FileText size={20} />
+
+                  <div>
+                    <strong>Document approved</strong>
+
+                    <p>Your pharmacy has been verified successfully.</p>
+                  </div>
+                </div>
+
+                <button type="button" className={styles.secondaryButton}>
+                  View Document
+                </button>
+              </>
+            ) : (
+              <>
+                <div className={styles.documentStatus}>
+                  <FileText size={20} />
+
+                  <div>
+                    <strong>Document required</strong>
+
+                    <p>
+                      Upload a clear photo or scan of your pharmacy license or
+                      registration document.
+                    </p>
+                  </div>
+                </div>
+
+                <label className={styles.uploadButton}>
+                  <Upload size={16} />
+                  Upload Document
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,application/pdf"
+                    hidden
+                  />
+                </label>
+              </>
+            )}
+          </div>
+        </div>
+      </article>
     </form>
   );
+}
+
+function PhoneIcon() {
+  return <span>☎</span>;
 }
 
 function Field({
