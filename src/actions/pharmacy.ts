@@ -8,6 +8,7 @@ import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
+import { getDbErrorMessage } from "@/lib/utils";
 import {
   getPharmacyDashboardData,
   getPharmacyProfile,
@@ -18,6 +19,7 @@ import {
   updatePharmacyById,
   deletePharmacyById,
 } from "@/services/pharmacy.service";
+import cloudinary from "@/lib/cloudinary";
 
 export async function CreatePharmacy(
   userName: string,
@@ -28,7 +30,7 @@ export async function CreatePharmacy(
   email: string,
   password: string,
   cpassword: string,
-) {
+): Promise<{ ok: boolean; error?: string }> {
   const credentials = z
     .object({
       userName: z.string().min(2),
@@ -301,4 +303,68 @@ export async function rejectPharmacyAction(formData: FormData) {
 
   revalidatePath("/admin/verify");
   redirect("/admin/verify");
+}
+
+export async function uploadPharmacyDocument(
+  formData: FormData,
+): Promise<{ ok: true; url: string } | { ok: false; error: string }> {
+  try {
+    const file = formData.get("document");
+
+    if (!(file instanceof File)) {
+      return {
+        ok: false,
+        error: "No document selected.",
+      };
+    }
+
+    if (!["image/jpeg", "image/png"].includes(file.type)) {
+      return {
+        ok: false,
+        error: "Please upload a JPG or PNG image.",
+      };
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      return {
+        ok: false,
+        error: "Document must be smaller than 5MB.",
+      };
+    }
+
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    const result = await new Promise<{ secure_url: string }>(
+      (resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream(
+            {
+              folder: "afalagi/pharmacy-documents",
+              resource_type: "image",
+            },
+            (error, result) => {
+              if (error) {
+                reject(error);
+              } else {
+                resolve(result);
+              }
+            },
+          )
+          .end(buffer);
+      },
+    );
+
+    return {
+      ok: true,
+      url: result.secure_url,
+    };
+  } catch (error) {
+    console.error("Document upload error:", error);
+
+    return {
+      ok: false,
+      error: "Failed to upload document.",
+    };
+  }
 }

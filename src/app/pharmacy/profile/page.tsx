@@ -12,7 +12,11 @@ import {
 } from "lucide-react";
 import styles from "../pharmacy.module.css";
 import { Profile as ProfileType } from "../../../types/pharmacy";
-import { getMyPharmacyProfile, updateMyProfile } from "@/actions/pharmacy";
+import {
+  getMyPharmacyProfile,
+  updateMyProfile,
+  uploadPharmacyDocument,
+} from "@/actions/pharmacy";
 
 type Profile = ProfileType;
 
@@ -22,6 +26,9 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [draft, setDraft] = useState<Profile | null>(null);
   const [editing, setEditing] = useState(false);
+
+  const [uploading, setUploading] = useState(false);
+  const [uploadMessage, setUploadMessage] = useState("");
 
   useEffect(() => {
     async function loadProfile() {
@@ -61,6 +68,31 @@ export default function ProfilePage() {
 
     setProfile(draft);
     setEditing(false);
+  }
+
+  async function handleDocumentUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    setUploading(true);
+    setUploadMessage("");
+
+    const formData = new FormData();
+    formData.append("document", file);
+
+    const result = await uploadPharmacyDocument(formData);
+
+    if (!result.ok) {
+      setUploadMessage(result.error);
+      setUploading(false);
+      return;
+    }
+
+    setUploadMessage("Document uploaded successfully.");
+    setUploading(false);
+
+    // We'll save result.url to Prisma in the next step.
   }
 
   const fields: [keyof Profile, string, ReactNode][] = [
@@ -240,13 +272,19 @@ export default function ProfilePage() {
 
                 <label className={styles.uploadButton}>
                   <Upload size={16} />
-                  Upload Document
+
+                  {uploading ? "Uploading..." : "Upload Document"}
+
                   <input
                     type="file"
-                    accept="image/jpeg,image/png,application/pdf"
+                    accept="image/jpeg,image/png"
                     hidden
+                    disabled={uploading}
+                    onChange={handleDocumentUpload}
                   />
                 </label>
+
+                {uploadMessage && <p>{uploadMessage}</p>}
               </>
             )}
           </div>
