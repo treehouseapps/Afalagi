@@ -281,11 +281,20 @@ export async function approvePharmacyAction(formData: FormData) {
   }
 
   await prisma.pharmacy.update({
-    where: { id },
-    data: { approved: true },
+    where: {
+      id,
+    },
+    data: {
+      approved: true,
+      documentStatus: "APPROVED",
+      rejectionReason: null,
+    },
   });
 
   revalidatePath("/admin/verify");
+  revalidatePath(`/admin/verify/${id}`);
+  revalidatePath("/pharmacy/profile");
+
   redirect("/admin/verify");
 }
 
