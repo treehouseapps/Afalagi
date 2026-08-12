@@ -8,79 +8,83 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  phone     String?
-  role      Role     @default(USER)
-  
+  id       Int     @id @default(autoincrement())
+  name     String
+  email    String  @unique
+  password String
+  phone    String?
+  role     Role    @default(USER)
+
   pharmacies Pharmacy[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-
 model Pharmacy {
-  id          Int      @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
-  ownerId     Int      
-  owner       User     @relation(fields: [ownerId], references: [id])
+  ownerId Int
+  owner   User @relation(fields: [ownerId], references: [id])
 
-  name        String
-  address     String
-  city        String
-  phone       String?
+  name    String
+  address String
+  city    String
+  phone   String?
 
-  latitude    Float?
-  longitude   Float?
+  latitude  Float?
+  longitude Float?
 
-  approved    Boolean  @default(false)
+  approved Boolean @default(false)
 
-  inventory   Inventory[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  inventory       Inventory[]
+  documentUrl     String?
+  documentStatus  DocumentStatus @default(PENDING)
+  rejectionReason String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
 }
-
 
 model Medicine {
-  id          Int      @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
-  name        String
-  genericName String?
-  description String?
-  dosage      String?
-  sideEffect  String?
-  category    String
+  name         String
+  genericName  String?
+  description  String?
+  dosage       String?
+  sideEffect   String?
+  category     String
   manufacturer String?
-  inventory Inventory[]
+  inventory    Inventory[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-
 model Inventory {
-  id          Int      @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
-  pharmacyId  Int
-  medicineId  Int
+  pharmacyId Int
+  medicineId Int
 
-  pharmacy    Pharmacy @relation(fields: [pharmacyId], references: [id])
-  medicine    Medicine @relation(fields: [medicineId], references: [id])
+  pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id])
+  medicine Medicine @relation(fields: [medicineId], references: [id])
 
-  quantity    Int      @default(0)
-  price       Float?
-  expiryDate  DateTime?
+  quantity   Int       @default(0)
+  price      Float?
+  expiryDate DateTime?
 
   createdAt DateTime @default(now())
 }
-
 
 enum Role {
   USER
   PHARMACIST
   ADMIN
+}
+
+enum DocumentStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }

@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE `Pharmacy` ADD COLUMN `documentStatus` ENUM('PENDING', 'APPROVED', 'REJECTED') NOT NULL DEFAULT 'PENDING',
+    ADD COLUMN `documentUrl` VARCHAR(191) NULL,
+    ADD COLUMN `rejectionReason` VARCHAR(191) NULL;
