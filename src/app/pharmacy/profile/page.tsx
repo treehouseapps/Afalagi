@@ -3,6 +3,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import {
   Edit2,
+  ExternalLink,
   FileText,
   Mail,
   MapPin,
@@ -10,8 +11,11 @@ import {
   Store,
   Upload,
 } from "lucide-react";
+
 import styles from "../pharmacy.module.css";
+
 import { Profile as ProfileType } from "../../../types/pharmacy";
+
 import {
   getMyPharmacyProfile,
   updateMyProfile,
@@ -75,6 +79,11 @@ export default function ProfilePage() {
 
     if (!file) return;
 
+    if (!profile) {
+      setUploadMessage("Profile not loaded.");
+      return;
+    }
+
     setUploading(true);
     setUploadMessage("");
 
@@ -89,18 +98,33 @@ export default function ProfilePage() {
       return;
     }
 
+    const updatedProfile: Profile = {
+      name: profile.name,
+      ownerName: profile.ownerName,
+      phone: profile.phone,
+      email: profile.email,
+      city: profile.city,
+      address: profile.address,
+      documentUrl: result.url,
+      documentStatus: "PENDING",
+      rejectionReason: null,
+      approved: false,
+    };
+
+    setProfile(updatedProfile);
+    setDraft(updatedProfile);
+
     setUploadMessage("Document uploaded successfully.");
     setUploading(false);
 
-    // We'll save result.url to Prisma in the next step.
+    e.target.value = "";
   }
-
   const fields: [keyof Profile, string, ReactNode][] = [
     ["phone", "Phone", <PhoneIcon key="phone" />],
     ["email", "Email", <Mail size={16} key="email" />],
   ];
 
-  const isVerified = profile.approved;
+  const isVerified = profile.approved && profile.documentStatus === "APPROVED";
 
   return (
     <form className={styles.profilePage} onSubmit={submit}>
@@ -155,7 +179,15 @@ export default function ProfilePage() {
               <Field
                 editing={false}
                 label="Status"
-                value={isVerified ? "Verified" : "Pending Approval"}
+                value={
+                  isVerified
+                    ? "Verified"
+                    : profile.documentStatus === "REJECTED"
+                      ? "Verification Rejected"
+                      : profile.documentStatus === "PENDING"
+                        ? "Under Review"
+                        : "Pending Approval"
+                }
                 onChange={() => {}}
               />
             </section>
@@ -239,41 +271,92 @@ export default function ProfilePage() {
           </div>
 
           <div className={styles.documentSection}>
-            {isVerified ? (
+            {isVerified && (
               <>
                 <div className={styles.documentStatus}>
                   <FileText size={20} />
 
                   <div>
-                    <strong>Document approved</strong>
+                    <strong>Document Approved</strong>
 
-                    <p>Your pharmacy has been verified successfully.</p>
+                    <p>Your pharmacy has been successfully verified.</p>
                   </div>
                 </div>
 
-                <button type="button" className={styles.secondaryButton}>
-                  View Document
-                </button>
+                {profile.documentUrl && (
+                  <a
+                    href={profile.documentUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.secondaryButton}
+                  >
+                    <ExternalLink size={16} />
+                    View Document
+                  </a>
+                )}
               </>
-            ) : (
+            )}
+
+            {!isVerified &&
+              profile.documentStatus === "PENDING" &&
+              profile.documentUrl && (
+                <>
+                  <div className={styles.documentStatus}>
+                    <FileText size={20} />
+
+                    <div>
+                      <strong>Document Under Review</strong>
+
+                      <p>
+                        Your document has been uploaded and is waiting for admin
+                        verification.
+                      </p>
+                    </div>
+                  </div>
+
+                  <a
+                    href={profile.documentUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.secondaryButton}
+                  >
+                    <ExternalLink size={16} />
+                    View Document
+                  </a>
+                </>
+              )}
+
+            {profile.documentStatus === "REJECTED" && (
               <>
                 <div className={styles.documentStatus}>
                   <FileText size={20} />
 
                   <div>
-                    <strong>Document required</strong>
+                    <strong>Document Rejected</strong>
 
                     <p>
-                      Upload a clear photo or scan of your pharmacy license or
-                      registration document.
+                      {profile.rejectionReason ||
+                        "Your document was rejected. Please upload a new document."}
                     </p>
                   </div>
                 </div>
 
+                {profile.documentUrl && (
+                  <a
+                    href={profile.documentUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.secondaryButton}
+                  >
+                    <ExternalLink size={16} />
+                    View Previous Document
+                  </a>
+                )}
+
                 <label className={styles.uploadButton}>
                   <Upload size={16} />
 
-                  {uploading ? "Uploading..." : "Upload Document"}
+                  {uploading ? "Uploading..." : "Upload New Document"}
 
                   <input
                     type="file"
@@ -283,10 +366,43 @@ export default function ProfilePage() {
                     onChange={handleDocumentUpload}
                   />
                 </label>
-
-                {uploadMessage && <p>{uploadMessage}</p>}
               </>
             )}
+
+            {!profile.documentUrl &&
+              profile.documentStatus !== "REJECTED" &&
+              !isVerified && (
+                <>
+                  <div className={styles.documentStatus}>
+                    <FileText size={20} />
+
+                    <div>
+                      <strong>Document Required</strong>
+
+                      <p>
+                        Upload a clear JPG or PNG photo of your pharmacy license
+                        or registration document.
+                      </p>
+                    </div>
+                  </div>
+
+                  <label className={styles.uploadButton}>
+                    <Upload size={16} />
+
+                    {uploading ? "Uploading..." : "Upload Document"}
+
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png"
+                      hidden
+                      disabled={uploading}
+                      onChange={handleDocumentUpload}
+                    />
+                  </label>
+                </>
+              )}
+
+            {uploadMessage && <p>{uploadMessage}</p>}
           </div>
         </div>
       </article>
