@@ -29,6 +29,9 @@ export type Profile = {
   email: string;
   city: string;
   address: string;
+  documentUrl: string | null;
+  documentStatus: "PENDING" | "APPROVED" | "REJECTED";
+  rejectionReason: string | null;
   approved: boolean;
 };
 export type Pharmacies = {

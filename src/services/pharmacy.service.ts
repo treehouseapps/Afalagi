@@ -82,6 +82,10 @@ export async function getPharmacyProfile() {
       ownerName: pharmacy.owner.name,
       address: pharmacy.address,
       approved: pharmacy.approved,
+
+      documentUrl: pharmacy.documentUrl,
+      documentStatus: pharmacy.documentStatus,
+      rejectionReason: pharmacy.rejectionReason,
     };
   } catch (error) {
     return { error: getDbErrorMessage(error) } as any;

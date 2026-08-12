@@ -309,6 +309,30 @@ export async function uploadPharmacyDocument(
   formData: FormData,
 ): Promise<{ ok: true; url: string } | { ok: false; error: string }> {
   try {
+    // Get currently logged-in pharmacist
+    const user = await getCurrentUser();
+
+    if (!user) {
+      return {
+        ok: false,
+        error: "Unauthorized.",
+      };
+    }
+
+    // Find the pharmacy owned by this user
+    const pharmacy = await prisma.pharmacy.findFirst({
+      where: {
+        ownerId: Number(user.id),
+      },
+    });
+
+    if (!pharmacy) {
+      return {
+        ok: false,
+        error: "Pharmacy not found.",
+      };
+    }
+
     const file = formData.get("document");
 
     if (!(file instanceof File)) {
@@ -347,13 +371,28 @@ export async function uploadPharmacyDocument(
               if (error) {
                 reject(error);
               } else {
-                resolve(result);
+                resolve(result as { secure_url: string });
               }
             },
           )
           .end(buffer);
       },
     );
+
+    await prisma.pharmacy.update({
+      where: {
+        id: pharmacy.id,
+      },
+      data: {
+        documentUrl: result.secure_url,
+        documentStatus: "PENDING",
+        rejectionReason: null,
+        approved: false,
+      },
+    });
+
+    revalidatePath("/pharmacy/profile");
+    revalidatePath("/pharmacy");
 
     return {
       ok: true,
@@ -364,7 +403,7 @@ export async function uploadPharmacyDocument(
 
     return {
       ok: false,
-      error: "Failed to upload document.",
+      error: error instanceof Error ? error.message : "Unknown upload error.",
     };
   }
 }
