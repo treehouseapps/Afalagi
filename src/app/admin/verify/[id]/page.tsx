@@ -51,7 +51,6 @@ export default async function PharmacyVerificationDetailsPage({
         before making a decision.
       </p>
 
-      {/* Pharmacy Information */}
       <section style={cardStyle}>
         <h2>Pharmacy Information</h2>
 
