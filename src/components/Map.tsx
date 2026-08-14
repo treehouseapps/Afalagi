@@ -4,14 +4,24 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { MapPin } from "lucide-react";
 import { renderToStaticMarkup } from "react-dom/server";
 import L from "leaflet";
+import type { Pharmacy } from "@/types/pharmacy";
 
-export default function Map() {
+export default function Map({ pharmacies }: { pharmacies: Pharmacy[] }) {
   const pharmacyIcon = L.divIcon({
     html: renderToStaticMarkup(<MapPin size={40} />),
     className: "custom-marker",
     iconSize: [40, 40],
     iconAnchor: [20, 40],
   });
+
+  const filtered = pharmacies.filter(
+    (
+      pharmacy,
+    ): pharmacy is Pharmacy & {
+      latitude: number;
+      longitude: number;
+    } => pharmacy.latitude !== null && pharmacy.longitude !== null,
+  );
 
   return (
     <MapContainer
@@ -23,13 +33,19 @@ export default function Map() {
       }}
     >
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      <Marker position={[8.9806, 38.7579]} icon={pharmacyIcon}>
-        <Popup>
-          <strong>Addis Pharmacy</strong>
-          <br />
-          Bole Road, Addis Ababa
-        </Popup>
-      </Marker>
+      {filtered.map((pharmacy) => (
+        <Marker
+          key={pharmacy.id}
+          position={[pharmacy.latitude, pharmacy.longitude]}
+          icon={pharmacyIcon}
+        >
+          <Popup>
+            <strong>{pharmacy.name}</strong>
+            <br />
+            {pharmacy.address}
+          </Popup>
+        </Marker>
+      ))}
     </MapContainer>
   );
 }
