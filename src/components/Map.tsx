@@ -6,6 +6,10 @@ import { renderToStaticMarkup } from "react-dom/server";
 import L from "leaflet";
 
 export default function Map() {
+  const pharmacyIcon = L.divIcon({
+    html: renderToStaticMarkup(<MapPin />),
+  });
+
   return (
     <MapContainer
       center={[8.9806, 38.7579]}
@@ -16,7 +20,7 @@ export default function Map() {
       }}
     >
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      <Marker position={[8.9806, 38.7579]} />
+      <Marker position={[8.9806, 38.7579]} icon={pharmacyIcon} />
     </MapContainer>
   );
 }
