@@ -6,6 +6,16 @@ import { renderToStaticMarkup } from "react-dom/server";
 import L, { LatLngTuple } from "leaflet";
 import { useEffect } from "react";
 import type { PharmacyListItem } from "@/types/pharmacy";
+
+// Create the pharmacy marker icon once at module scope so it isn't recreated
+// every render. This keeps marker appearance identical while improving
+// rendering performance for many markers.
+const pharmacyIcon = L.divIcon({
+  html: renderToStaticMarkup(<MapPin size={40} />),
+  className: "custom-marker",
+  iconSize: [40, 40],
+  iconAnchor: [20, 40],
+});
 function MapController({ pharmacies }: { pharmacies: PharmacyListItem[] }) {
   const map = useMap();
 
@@ -32,13 +42,6 @@ export default function Map({
 }: {
   pharmacies: PharmacyListItem[];
 }) {
-  const pharmacyIcon = L.divIcon({
-    html: renderToStaticMarkup(<MapPin size={40} />),
-    className: "custom-marker",
-    iconSize: [40, 40],
-    iconAnchor: [20, 40],
-  });
-
   const filtered = pharmacies.filter(
     (
       pharmacy,

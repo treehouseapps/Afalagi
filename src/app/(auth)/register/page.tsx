@@ -31,6 +31,7 @@ export default function RegisterPage() {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const router = useRouter();
   const submit = async (e: FormEvent<HTMLFormElement>) => {
@@ -43,6 +44,7 @@ export default function RegisterPage() {
     }
 
     try {
+      setIsSubmitting(true);
       console.log("Submitting coordinates:", latitude, longitude);
       const result = await CreatePharmacy(
         userName,
@@ -58,11 +60,13 @@ export default function RegisterPage() {
       );
       if (!result.ok) {
         setError(result.error ?? "Unable to sign up. Please try again.");
+        setIsSubmitting(false);
         return;
       }
       router.push("/pharmacy");
     } catch (error) {
       setError("Something went wrong. Please try again.");
+      setIsSubmitting(false);
     }
   };
   return (
@@ -294,8 +298,13 @@ export default function RegisterPage() {
                     >
                       Back
                     </button>
-                    <button type="submit" className="auth-submit">
-                      Create Account
+                    <button
+                      type="submit"
+                      className="auth-submit"
+                      disabled={isSubmitting}
+                      aria-busy={isSubmitting}
+                    >
+                      {isSubmitting ? "Creating account..." : "Create Account"}
                     </button>
                   </div>
                 </>

@@ -1,7 +1,5 @@
-"use client";
-
-import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import {
   ArrowLeft,
   MapPin,
@@ -18,54 +16,53 @@ import {
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
 import { getMedicineById } from "@/actions/medicine";
-import { useParams } from "next/navigation";
 import { getPharmacyList } from "@/actions/pharmacy";
 import { PharmacyListItem } from "@/types/pharmacy";
 import PharmacyList from "@/components/pharmacy/PharmacyList";
 import dynamic from "next/dynamic";
 
-export default function MedicineDetailPage() {
-  const { id } = useParams();
+type Props = {
+  params: {
+    id: string;
+  };
+};
 
-  const [medicineData, setMedicineData] = useState<any>(null);
-  const [availablePharmacies, setAvailablePharmacies] = useState<
-    PharmacyListItem[]
-  >([]);
-  useEffect(() => {
-    const fetchMedicine = async () => {
-      if (!id) return;
+export default async function MedicineDetailPage({ params }: Props) {
+  const { id } = params;
 
-      const [medicineRes, pharmacyRes] = await Promise.all([
-        getMedicineById(Number(id)),
-        getPharmacyList(Number(id)),
-      ]);
+  if (!id) {
+    notFound();
+  }
 
-      setMedicineData(medicineRes);
-      setAvailablePharmacies(
-        (pharmacyRes.pharmacy || []).map((inventoryItem: any) => ({
-          id: inventoryItem.pharmacy.id,
-          name: inventoryItem.pharmacy.name,
-          address: inventoryItem.pharmacy.address,
-          city: inventoryItem.pharmacy.city,
-          phone: inventoryItem.pharmacy.phone,
-          latitude: inventoryItem.pharmacy.latitude,
-          longitude: inventoryItem.pharmacy.longitude,
-          approved: inventoryItem.pharmacy.approved,
-          distance: inventoryItem.pharmacy.distance,
-        })),
-      );
-    };
+  const [medicineRes, pharmacyRes] = await Promise.all([
+    getMedicineById(Number(id)),
+    getPharmacyList(Number(id)),
+  ]);
 
-    fetchMedicine();
-  }, [id]);
+  if (!medicineRes || medicineRes.length === 0) {
+    notFound();
+  }
+
+  const availablePharmacies: PharmacyListItem[] = (
+    (pharmacyRes?.pharmacy ?? []) as any[]
+  ).map((inventoryItem) => ({
+    id: inventoryItem.pharmacy.id,
+    name: inventoryItem.pharmacy.name,
+    address: inventoryItem.pharmacy.address,
+    city: inventoryItem.pharmacy.city,
+    phone: inventoryItem.pharmacy.phone,
+    latitude: inventoryItem.pharmacy.latitude,
+    longitude: inventoryItem.pharmacy.longitude,
+    approved: inventoryItem.pharmacy.approved,
+    distance: inventoryItem.pharmacy.distance,
+  }));
 
   const MapPage = dynamic(() => import("@/components/map/Map"), {
     ssr: false,
   });
 
-  if (!medicineData) {
-    return <p>Loading...</p>;
-  }
+  const medicineData = medicineRes;
+
   return (
     <div className="list-page">
       <Navbar />
