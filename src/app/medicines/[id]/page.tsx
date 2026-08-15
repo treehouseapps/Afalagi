@@ -124,67 +124,6 @@ export default function MedicineDetailPage() {
 
         <br />
         <br />
-
-        {/* <div className="list-container single-col">
-          <div className="filter-header">
-            <Building2 size={22} />
-            <h2>Available at Nearby Pharmacies</h2>
-          </div>
-
-          <div className="items-list">
-            {availablePharmacies.length === 0 ? (
-              <div className="item-card">
-                <div className="info-row">
-                  <AlertCircle size={24} />
-                  <span>
-                    This medicine is currently unavailable at nearby pharmacies.
-                  </span>
-                </div>
-              </div>
-            ) : (
-              availablePharmacies.map((pharmac) => (
-                <div key={pharmac.pharmacy.id} className="pharmacy-card">
-                  <div className="pharmacy-header">
-                    <div>
-                      <h3>{pharmac.pharmacy.name}</h3>
-
-                      <div className="info-row">
-                        <MapPin size={15} />
-                        <span>{pharmac.pharmacy.address}</span>
-                      </div>
-
-                      <div className="info-row">
-                        <Clock3 size={15} />
-                        <span>{pharmac.pharmacy.distance} away</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="item-footer">
-                    <Link href={`/pharmacies/${pharmac.pharmacy.id}`}>
-                      <button className="nav-button ghost">
-                        View Pharmacy
-                      </button>
-                    </Link>
-
-                    <button className="nav-button primary">
-                      <Navigation2 size={16} />
-                      Directions
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
-
-            <div className="item-card">
-              <div className="info-row">
-                <MapIcon size={30} />
-                <span>Interactive Map (Coming Soon)</span>
-              </div>
-            </div>
-          </div>
-        </div> */}
-
         <PharmacyList Pharmacies={availablePharmacies} />
       </main>
 

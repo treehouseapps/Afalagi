@@ -1,10 +1,32 @@
 "use client";
 
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { MapPin } from "lucide-react";
 import { renderToStaticMarkup } from "react-dom/server";
-import L from "leaflet";
+import L, { LatLngTuple } from "leaflet";
+import { useEffect } from "react";
 import type { Pharmacy } from "@/types/pharmacy";
+
+function MapController({ pharmacies }: { pharmacies: Pharmacy[] }) {
+  const map = useMap();
+
+  useEffect(() => {
+    const locations = pharmacies.filter(
+      (pharmacy) => pharmacy.latitude !== null && pharmacy.longitude !== null,
+    );
+
+    const bounds: LatLngTuple[] = locations.map((pharmacy) => [
+      pharmacy.latitude!,
+      pharmacy.longitude!,
+    ]);
+
+    if (bounds.length > 0) {
+      map.fitBounds(bounds);
+    }
+  }, [map, pharmacies]);
+
+  return null;
+}
 
 export default function Map({ pharmacies }: { pharmacies: Pharmacy[] }) {
   const pharmacyIcon = L.divIcon({
@@ -33,6 +55,7 @@ export default function Map({ pharmacies }: { pharmacies: Pharmacy[] }) {
       }}
     >
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+
       {filtered.map((pharmacy) => (
         <Marker
           key={pharmacy.id}
@@ -46,6 +69,8 @@ export default function Map({ pharmacies }: { pharmacies: Pharmacy[] }) {
           </Popup>
         </Marker>
       ))}
+
+      <MapController pharmacies={pharmacies} />
     </MapContainer>
   );
 }
