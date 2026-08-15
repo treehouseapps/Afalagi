@@ -13,10 +13,8 @@ export default async function MedicinesPage() {
     category: item.medicine.category,
     genericName: item.medicine.genericName,
     manufacturer: item.medicine.manufacturer,
-    dosage: item.dosage ?? null,
-    sideEffect: item.sideEffect ?? null,
-    price: item.price ?? null,
-    expiryDate: item.expiryDate ?? null,
+    dosage: item.medicine.dosage ?? null,
+    sideEffect: item.medicine.sideEffect ?? null,
   }));
 
   return (
