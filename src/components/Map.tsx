@@ -5,9 +5,8 @@ import { MapPin } from "lucide-react";
 import { renderToStaticMarkup } from "react-dom/server";
 import L, { LatLngTuple } from "leaflet";
 import { useEffect } from "react";
-import type { Pharmacy } from "@/types/pharmacy";
-
-function MapController({ pharmacies }: { pharmacies: Pharmacy[] }) {
+import type { PharmacyListItem } from "@/types/pharmacy";
+function MapController({ pharmacies }: { pharmacies: PharmacyListItem[] }) {
   const map = useMap();
 
   useEffect(() => {
@@ -28,7 +27,11 @@ function MapController({ pharmacies }: { pharmacies: Pharmacy[] }) {
   return null;
 }
 
-export default function Map({ pharmacies }: { pharmacies: Pharmacy[] }) {
+export default function Map({
+  pharmacies,
+}: {
+  pharmacies: PharmacyListItem[];
+}) {
   const pharmacyIcon = L.divIcon({
     html: renderToStaticMarkup(<MapPin size={40} />),
     className: "custom-marker",
@@ -39,7 +42,7 @@ export default function Map({ pharmacies }: { pharmacies: Pharmacy[] }) {
   const filtered = pharmacies.filter(
     (
       pharmacy,
-    ): pharmacy is Pharmacy & {
+    ): pharmacy is PharmacyListItem & {
       latitude: number;
       longitude: number;
     } => pharmacy.latitude !== null && pharmacy.longitude !== null,
@@ -50,8 +53,9 @@ export default function Map({ pharmacies }: { pharmacies: Pharmacy[] }) {
       center={[8.9806, 38.7579]}
       zoom={15}
       style={{
-        height: "500px",
-        width: "100%",
+        height: "300px",
+        width: "70%",
+        margin: "0 auto",
       }}
     >
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />

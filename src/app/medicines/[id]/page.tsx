@@ -22,6 +22,8 @@ import { useParams } from "next/navigation";
 import { getPharmacyList } from "@/actions/pharmacy";
 import { PharmacyListItem } from "@/types/pharmacy";
 import PharmacyList from "@/components/pharmacy/PharmacyList";
+import dynamic from "next/dynamic";
+
 export default function MedicineDetailPage() {
   const { id } = useParams();
 
@@ -40,24 +42,30 @@ export default function MedicineDetailPage() {
 
       setMedicineData(medicineRes);
       setAvailablePharmacies(
-        (pharmacyRes.pharmacy || []).map((inventoryItem: any) => ({
-          id: inventoryItem.pharmacy.id,
-          name: inventoryItem.pharmacy.name,
-          address: inventoryItem.pharmacy.address,
-          city: inventoryItem.pharmacy.city,
-          phone: inventoryItem.pharmacy.phone,
-          latitude: inventoryItem.pharmacy.latitude,
-          longitude: inventoryItem.pharmacy.longitude,
-          approved: inventoryItem.pharmacy.approved,
-          distance: inventoryItem.pharmacy.distance,
-        })),
+        (pharmacyRes.pharmacy || [])
+          .filter(
+            (inventoryItem: any) => inventoryItem.pharmacy.approved === true,
+          )
+          .map((inventoryItem: any) => ({
+            id: inventoryItem.pharmacy.id,
+            name: inventoryItem.pharmacy.name,
+            address: inventoryItem.pharmacy.address,
+            city: inventoryItem.pharmacy.city,
+            phone: inventoryItem.pharmacy.phone,
+            latitude: inventoryItem.pharmacy.latitude,
+            longitude: inventoryItem.pharmacy.longitude,
+            approved: inventoryItem.pharmacy.approved,
+            distance: inventoryItem.pharmacy.distance,
+          })),
       );
     };
 
     fetchMedicine();
   }, [id]);
 
-  console.log(medicineData);
+  const MapPage = dynamic(() => import("@/components/Map"), {
+    ssr: false,
+  });
 
   if (!medicineData) {
     return <p>Loading...</p>;
@@ -125,6 +133,10 @@ export default function MedicineDetailPage() {
         <br />
         <br />
         <PharmacyList Pharmacies={availablePharmacies} />
+
+        <div className="mt-6">
+          <MapPage pharmacies={availablePharmacies} />
+        </div>
       </main>
 
       <Footer />
