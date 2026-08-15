@@ -83,14 +83,15 @@ export async function CreatePharmacy(
         phone,
       },
     });
-
-    await prisma.pharmacy.create({
+    const pharmacy = await prisma.pharmacy.create({
       data: {
         ownerId: user.id,
         name: pharmacyName,
         address: pharmAddress,
         city,
         phone,
+        latitude,
+        longitude,
       },
     });
 

@@ -43,6 +43,7 @@ export default function RegisterPage() {
     }
 
     try {
+      console.log("Submitting coordinates:", latitude, longitude);
       const result = await CreatePharmacy(
         userName,
         pharmacyName,
@@ -201,6 +202,11 @@ export default function RegisterPage() {
                       type="button"
                       className="auth-submit"
                       onClick={() => {
+                        if (!city.trim() || !pharmAddress.trim()) {
+                          setError("Please fill in all required fields.");
+                          return;
+                        }
+
                         if (latitude === null || longitude === null) {
                           setError(
                             "Please select your pharmacy location on the map.",

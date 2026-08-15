@@ -42,21 +42,17 @@ export default function MedicineDetailPage() {
 
       setMedicineData(medicineRes);
       setAvailablePharmacies(
-        (pharmacyRes.pharmacy || [])
-          .filter(
-            (inventoryItem: any) => inventoryItem.pharmacy.approved === true,
-          )
-          .map((inventoryItem: any) => ({
-            id: inventoryItem.pharmacy.id,
-            name: inventoryItem.pharmacy.name,
-            address: inventoryItem.pharmacy.address,
-            city: inventoryItem.pharmacy.city,
-            phone: inventoryItem.pharmacy.phone,
-            latitude: inventoryItem.pharmacy.latitude,
-            longitude: inventoryItem.pharmacy.longitude,
-            approved: inventoryItem.pharmacy.approved,
-            distance: inventoryItem.pharmacy.distance,
-          })),
+        (pharmacyRes.pharmacy || []).map((inventoryItem: any) => ({
+          id: inventoryItem.pharmacy.id,
+          name: inventoryItem.pharmacy.name,
+          address: inventoryItem.pharmacy.address,
+          city: inventoryItem.pharmacy.city,
+          phone: inventoryItem.pharmacy.phone,
+          latitude: inventoryItem.pharmacy.latitude,
+          longitude: inventoryItem.pharmacy.longitude,
+          approved: inventoryItem.pharmacy.approved,
+          distance: inventoryItem.pharmacy.distance,
+        })),
       );
     };
 

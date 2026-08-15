@@ -181,6 +181,9 @@ export async function getPharmacyById(pharmId: number) {
     const pharmacy = await prisma.inventory.findMany({
       where: {
         medicineId: Number(pharmId),
+        pharmacy: {
+          approved: true,
+        },
       },
       include: {
         pharmacy: true,

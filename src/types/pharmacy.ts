@@ -5,8 +5,8 @@ export interface Pharmacy {
   address: string;
   city: string;
   phone: string | null;
-  latitude: number;
-  longitude: number;
+  latitude: number | null;
+  longitude: number | null;
   approved: boolean;
 }
 
