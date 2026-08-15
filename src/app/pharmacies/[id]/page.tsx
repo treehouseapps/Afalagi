@@ -29,9 +29,20 @@ export default function PharmacyDetailPage() {
     pharmacyData();
   }, [id]);
 
+  const handleGetDirections = () => {
+    if (pharmacy?.latitude == null || pharmacy?.longitude == null) {
+      return;
+    }
+
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${pharmacy.latitude},${pharmacy.longitude}`;
+
+    window.open(url, "_blank");
+  };
+
   if (!pharmacy) {
     return <p>Loading...</p>;
   }
+
   return (
     <div className="detail-page">
       <Navbar />
@@ -142,7 +153,12 @@ export default function PharmacyDetailPage() {
               </div>
             </div>
 
-            <button type="button" className="cta-button full-width">
+            <button
+              type="button"
+              className="cta-button full-width"
+              onClick={handleGetDirections}
+              disabled={pharmacy.latitude == null || pharmacy.longitude == null}
+            >
               <Navigation size={18} />
               Get Directions
             </button>
