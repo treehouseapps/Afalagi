@@ -30,6 +30,8 @@ export async function CreatePharmacy(
   email: string,
   password: string,
   cpassword: string,
+  latitude: number,
+  longitude: number,
 ): Promise<{ ok: boolean; error?: string }> {
   const credentials = z
     .object({

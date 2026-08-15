@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
@@ -7,6 +8,13 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { CreatePharmacy } from "@/actions/pharmacy";
 import { useRouter } from "next/navigation";
+
+const LocationPicker = dynamic(
+  () => import("@/components/map/LocationPicker"),
+  {
+    ssr: false,
+  },
+);
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -21,6 +29,8 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [cpassword, setCPassword] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
 
   const router = useRouter();
   const submit = async (e: FormEvent<HTMLFormElement>) => {
@@ -42,6 +52,8 @@ export default function RegisterPage() {
         email,
         password,
         cpassword,
+        latitude as number,
+        longitude as number,
       );
       if (!result.ok) {
         setError(result.error ?? "Unable to sign up. Please try again.");
@@ -147,6 +159,23 @@ export default function RegisterPage() {
                   </div>
 
                   <div className="form-group">
+                    <label>Pharmacy Location</label>
+
+                    <p>
+                      Click on the map to select your exact pharmacy location.
+                    </p>
+
+                    <LocationPicker
+                      latitude={latitude}
+                      longitude={longitude}
+                      onLocationSelect={(lat, lng) => {
+                        setLatitude(lat);
+                        setLongitude(lng);
+                      }}
+                    />
+                  </div>
+
+                  <div className="form-group">
                     <label htmlFor="phone">Phone Number</label>
                     <input
                       value={phone}
@@ -171,7 +200,17 @@ export default function RegisterPage() {
                     <button
                       type="button"
                       className="auth-submit"
-                      onClick={() => setStep(3)}
+                      onClick={() => {
+                        if (latitude === null || longitude === null) {
+                          setError(
+                            "Please select your pharmacy location on the map.",
+                          );
+                          return;
+                        }
+
+                        setError("");
+                        setStep(3);
+                      }}
                     >
                       Continue
                     </button>

@@ -63,7 +63,7 @@ export default function MedicineDetailPage() {
     fetchMedicine();
   }, [id]);
 
-  const MapPage = dynamic(() => import("@/components/Map"), {
+  const MapPage = dynamic(() => import("@/components/map/Map"), {
     ssr: false,
   });
 
